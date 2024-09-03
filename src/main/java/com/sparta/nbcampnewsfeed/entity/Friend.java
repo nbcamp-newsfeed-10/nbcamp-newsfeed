@@ -31,4 +31,9 @@ public class Friend {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    public Friend(User toUser, User fromUser) {
+        this.toUser = toUser;
+        this.fromUser = fromUser;
+    }
 }
