@@ -2,10 +2,7 @@ package com.sparta.nbcampnewsfeed.service;
 
 import com.sparta.nbcampnewsfeed.config.JwtUtil;
 import com.sparta.nbcampnewsfeed.config.PasswordEncoder;
-import com.sparta.nbcampnewsfeed.dto.requestDto.AuthUser;
-import com.sparta.nbcampnewsfeed.dto.requestDto.SigninRequest;
-import com.sparta.nbcampnewsfeed.dto.requestDto.SignupRequestDto;
-import com.sparta.nbcampnewsfeed.dto.requestDto.UserProfileUpdateRequestDto;
+import com.sparta.nbcampnewsfeed.dto.requestDto.*;
 import com.sparta.nbcampnewsfeed.dto.responseDto.SignupResponseDto;
 import com.sparta.nbcampnewsfeed.dto.responseDto.UserProfileMeResponseDto;
 import com.sparta.nbcampnewsfeed.dto.responseDto.UserProfileResponseDto;
@@ -41,6 +38,11 @@ public class UserService {
     public String signin(SigninRequest signinRequest) {
         User user = userRepository.findByEmail(signinRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // 탈퇴한 회원
+        if (!user.isActive()) {
+            throw new IllegalArgumentException("withdraw user");
+        }
 
         // 비밀번호 불일치
         if (!passwordEncoder.matches(signinRequest.getPassword(), user.getPassword())) {
@@ -95,6 +97,29 @@ public class UserService {
         userRepository.save(user);
 
         return new UserProfileUpdateResponseDto(user);
+    }
+
+    @Transactional
+    public void withdraw(WithdrawRequestDto requestDto, AuthUser authUser) {
+        // 로그인 회원과 탈퇴를 시도하는 회원이 다를 때
+        if (!authUser.getEmail().equals(requestDto.getEmail())) {
+            throw new IllegalArgumentException("자신의 계정만 삭제 가능합니다.");
+        }
+
+        User user = userRepository.findByEmail(requestDto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // 이미 탈퇴한 회원
+        if (!user.isActive()) {
+            throw new IllegalArgumentException("withdraw user");
+        }
+
+        // 비밀번호 불일치
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Incorrect password");
+        }
+
+        user.withdraw();
     }
 
     private boolean isValidPassword(String password) {
