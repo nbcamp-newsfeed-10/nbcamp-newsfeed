@@ -23,6 +23,7 @@ public class PostController {
     // create Post
     @PostMapping
     public ResponseEntity<PostResponseDto> createPost(@Auth AuthUser authUser, @RequestBody PostRequestDto requestDto) {
+        System.out.println("authUser=" + authUser.getId());
         PostResponseDto responseDto = postService.createPost(authUser.getId(), requestDto);
         return ResponseEntity.status(201).body(responseDto);
     }

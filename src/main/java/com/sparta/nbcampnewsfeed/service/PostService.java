@@ -30,7 +30,7 @@ public class PostService {
         Post post = new Post(user, requestDto.getTitle(), requestDto.getContent());
 
         // 게시물 저장
-        Post savedPost = postRepository.save(post);
+        postRepository.save(post);
 
         // post 엔티티를 PostResponseDto 로 변환하여 반환
         return new PostResponseDto(
