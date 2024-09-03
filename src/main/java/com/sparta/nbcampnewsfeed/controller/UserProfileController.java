@@ -19,18 +19,18 @@ public class UserProfileController {
     private final UserService userService;
 
     // 프로필 조회
-    @GetMapping("/{user_id}/profile")
+    @GetMapping("/{userId}/profile")
     public ResponseEntity<?> getUserProfile(
-            @PathVariable Long user_id,
+            @PathVariable Long userId,
             @Auth AuthUser authUser) {
 
-        if (authUser.getId() != null && authUser.getId().equals(user_id)) {
+        if (authUser.getId() != null && authUser.getId().equals(userId)) {
             // 자신이 자신의 프로필을 조회하는 경우 모든 정보 반환
-            UserProfileMeResponseDto responseDto = userService.getUserProfileForMe(user_id);
+            UserProfileMeResponseDto responseDto = userService.getUserProfileForMe(userId);
             return ResponseEntity.ok(responseDto);
         } else {
             // 다른 사용자가 조회하는 경우 민감한 정보를 제외한 정보 반환
-            UserProfileResponseDto responseDto = userService.getUserProfile(user_id);
+            UserProfileResponseDto responseDto = userService.getUserProfile(userId);
             if (responseDto == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
             }
@@ -39,13 +39,13 @@ public class UserProfileController {
     }
 
     // 프로필 수정
-    @PutMapping("/{user_id}/profile")
+    @PutMapping("/{userId}/profile")
     public ResponseEntity<UserProfileUpdateResponseDto> updateUserProfile(
-            @PathVariable Long user_id,
+            @PathVariable Long userId,
             @RequestBody UserProfileUpdateRequestDto updateRequest,
             @Auth AuthUser authUser) {
 
-        UserProfileUpdateResponseDto responseDto = userService.updateUserProfile(user_id, updateRequest, authUser);
+        UserProfileUpdateResponseDto responseDto = userService.updateUserProfile(userId, updateRequest, authUser);
         if (responseDto == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
