@@ -28,7 +28,7 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
-  
+
     // 비밀번호 변경 메소드
     public void changePassword(String newPassword) {
         this.password = newPassword;
@@ -40,6 +40,15 @@ public class User {
         this.username = newUsername;
         this.bio = newBio;
         this.updatedAt = LocalDateTime.now();
+    }
+
+    // 회원 탈퇴를 위한 프로필 비활성화
+    public void withdraw() {
+        this.active = false;
+        // 이메일을 제외한 모든 데이터 삭제
+        this.username = null;
+        this.password = null;
+        this.bio = null;
     }
 
     // Constructor for JPA

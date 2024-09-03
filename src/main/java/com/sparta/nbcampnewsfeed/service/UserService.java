@@ -2,9 +2,7 @@ package com.sparta.nbcampnewsfeed.service;
 
 import com.sparta.nbcampnewsfeed.config.JwtUtil;
 import com.sparta.nbcampnewsfeed.config.PasswordEncoder;
-import com.sparta.nbcampnewsfeed.dto.requestDto.SigninRequest;
-import com.sparta.nbcampnewsfeed.dto.requestDto.SignupRequestDto;
-import com.sparta.nbcampnewsfeed.dto.requestDto.UserProfileUpdateRequestDto;
+import com.sparta.nbcampnewsfeed.dto.requestDto.*;
 import com.sparta.nbcampnewsfeed.dto.responseDto.SignupResponseDto;
 import com.sparta.nbcampnewsfeed.dto.responseDto.UserProfileMeResponseDto;
 import com.sparta.nbcampnewsfeed.dto.responseDto.UserProfileResponseDto;
@@ -41,6 +39,11 @@ public class UserService {
         User user = userRepository.findByEmail(signinRequest.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        // 탈퇴한 회원
+        if (!user.isActive()) {
+            throw new IllegalArgumentException("withdraw user");
+        }
+
         // 비밀번호 불일치
         if (!passwordEncoder.matches(signinRequest.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("wrong password");
@@ -50,23 +53,23 @@ public class UserService {
     }
 
     public UserProfileMeResponseDto getUserProfileForMe(Long userId) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            return null;
-        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("The user is not me"));
         return new UserProfileMeResponseDto(user);
     }
 
     public UserProfileResponseDto getUserProfile(Long userId) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            return null;
-        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
         return new UserProfileResponseDto(user);
     }
 
     @Transactional
-    public UserProfileUpdateResponseDto updateUserProfile(Long userId, UserProfileUpdateRequestDto updateRequest) {
+    public UserProfileUpdateResponseDto updateUserProfile(Long userId, UserProfileUpdateRequestDto updateRequest,
+                                                          AuthUser authUser) {
+        // 로그인 회원과 수정하려는 프로필 회원이 다를 때
+        if (!authUser.getId().equals(userId)) {
+            throw new IllegalArgumentException("can not update other profile");
+        }
+
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             return null;
@@ -74,11 +77,11 @@ public class UserService {
 
         // 비밀번호 변경 처리
         if (updateRequest.getCurrentPassword() != null && updateRequest.getNewPassword() != null) {
-            if (!updateRequest.getCurrentPassword().equals(user.getPassword())) {
+            if (!passwordEncoder.matches(updateRequest.getCurrentPassword(), user.getPassword())) {
                 throw new IllegalArgumentException("Current password is incorrect");
             }
 
-            if (updateRequest.getCurrentPassword().equals(updateRequest.getNewPassword())) {
+            if (passwordEncoder.matches(updateRequest.getNewPassword(), user.getPassword())) {
                 throw new IllegalArgumentException("New password cannot be the same as the current password");
             }
 
@@ -86,7 +89,7 @@ public class UserService {
                 throw new IllegalArgumentException("New password does not meet the required format");
             }
 
-            user.changePassword(updateRequest.getNewPassword());
+            user.changePassword(passwordEncoder.encode(updateRequest.getNewPassword()));
         }
 
         // 프로필 정보 수정 처리
@@ -94,6 +97,29 @@ public class UserService {
         userRepository.save(user);
 
         return new UserProfileUpdateResponseDto(user);
+    }
+
+    @Transactional
+    public void withdraw(WithdrawRequestDto requestDto, AuthUser authUser) {
+        // 로그인 회원과 탈퇴를 시도하는 회원이 다를 때
+        if (!authUser.getEmail().equals(requestDto.getEmail())) {
+            throw new IllegalArgumentException("자신의 계정만 삭제 가능합니다.");
+        }
+
+        User user = userRepository.findByEmail(requestDto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // 이미 탈퇴한 회원
+        if (!user.isActive()) {
+            throw new IllegalArgumentException("withdraw user");
+        }
+
+        // 비밀번호 불일치
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Incorrect password");
+        }
+
+        user.withdraw();
     }
 
     private boolean isValidPassword(String password) {

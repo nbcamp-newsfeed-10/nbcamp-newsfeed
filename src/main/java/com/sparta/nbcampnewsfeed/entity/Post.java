@@ -29,24 +29,3 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 }
-
-//private Long id;
-//
-//@Column(nullable = false)
-//private String content;
-//
-//@Column(nullable = false)
-//private String username; // 게시물 작성자
-//
-//@Column(nullable = false)
-//private int likeCount = 0;
-//
-//// 좋아요 수 증가
-//public void incrementLike() {
-//    this.likeCount++;
-//}
-//
-//// 좋아요 수 감소
-//public void decrementLike() {
-//    this.likeCount--;
-//}
