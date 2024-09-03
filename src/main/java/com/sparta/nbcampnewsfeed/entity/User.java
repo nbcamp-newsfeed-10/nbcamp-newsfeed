@@ -28,4 +28,10 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    // 생성자
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 }
