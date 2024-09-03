@@ -3,9 +3,7 @@ package com.sparta.nbcampnewsfeed.dto.request;
 import lombok.Getter;
 
 @Getter
-public class CommentRequestDto {
+public class CommentUpdateRequestDto {
 
-    private Long postId;
-    private Long userId;
     private String content;
 }
