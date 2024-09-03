@@ -28,4 +28,15 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    public User(String username, String email, String bio, String password) {
+        this.username = username;
+        this.email = email;
+        this.bio = bio;
+        this.password = password;
+    }
+
+    public User() {
+
+    }
 }
