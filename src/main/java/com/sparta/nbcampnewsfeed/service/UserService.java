@@ -2,6 +2,7 @@ package com.sparta.nbcampnewsfeed.service;
 
 import com.sparta.nbcampnewsfeed.config.JwtUtil;
 import com.sparta.nbcampnewsfeed.config.PasswordEncoder;
+import com.sparta.nbcampnewsfeed.dto.requestDto.AuthUser;
 import com.sparta.nbcampnewsfeed.dto.requestDto.SigninRequest;
 import com.sparta.nbcampnewsfeed.dto.requestDto.SignupRequestDto;
 import com.sparta.nbcampnewsfeed.dto.requestDto.UserProfileUpdateRequestDto;
@@ -60,7 +61,13 @@ public class UserService {
     }
 
     @Transactional
-    public UserProfileUpdateResponseDto updateUserProfile(Long userId, UserProfileUpdateRequestDto updateRequest) {
+    public UserProfileUpdateResponseDto updateUserProfile(Long userId, UserProfileUpdateRequestDto updateRequest,
+                                                          AuthUser authUser) {
+        // 로그인 회원과 수정하려는 프로필 회원이 다를 때
+        if (!authUser.getId().equals(userId)) {
+            throw new IllegalArgumentException("can not update other profile");
+        }
+
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             return null;
@@ -68,11 +75,11 @@ public class UserService {
 
         // 비밀번호 변경 처리
         if (updateRequest.getCurrentPassword() != null && updateRequest.getNewPassword() != null) {
-            if (!updateRequest.getCurrentPassword().equals(user.getPassword())) {
+            if (!passwordEncoder.matches(updateRequest.getCurrentPassword(), user.getPassword())) {
                 throw new IllegalArgumentException("Current password is incorrect");
             }
 
-            if (updateRequest.getCurrentPassword().equals(updateRequest.getNewPassword())) {
+            if (passwordEncoder.matches(updateRequest.getNewPassword(), user.getPassword())) {
                 throw new IllegalArgumentException("New password cannot be the same as the current password");
             }
 
@@ -80,7 +87,7 @@ public class UserService {
                 throw new IllegalArgumentException("New password does not meet the required format");
             }
 
-            user.changePassword(updateRequest.getNewPassword());
+            user.changePassword(passwordEncoder.encode(updateRequest.getNewPassword()));
         }
 
         // 프로필 정보 수정 처리
