@@ -37,6 +37,7 @@ public class UserService {
         return userRepository.findById(user_id).orElse(null);
     }
 
+    @Transactional
     // 프로필 저장
     public void updateUserProfile(User profile) {
         userRepository.save(profile);
