@@ -46,5 +46,35 @@ public class FriendService {
         return new UserProfileResponseDto(user);
     }
 
+    @Transactional
+    public UserProfileResponseDto acceptFriendRequest(Long userId, AuthUser authUser) {
+        User fromUser = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User toUser = userRepository.findById(authUser.getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // 탈퇴한 회원의 친구 신청 수락 불가
+        if (!fromUser.isActive()) {
+            throw new IllegalArgumentException("withdraw user");
+        }
+
+        // 친구 요청 기록이 없는 경우 수락 불가
+        Friend friend = friendRepository.findByToUserAndFromUser(toUser, fromUser)
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원에게 받은 친구 추가 요청이 없습니다"));
+
+        // 이미 친구 관계인 경우
+        friendRepository.findByToUserAndFromUserAndAndFriendStatus(toUser, fromUser, true)
+                .ifPresent(u -> {throw new IllegalArgumentException("이미 친구인 회원입니다.");});
+
+        // 친구 관계 true 로 설정
+        friend.acceptFriend();
+
+        // 양방향 친구 관계 생성 & 저장(게시물의 원활한 조회를 위해)
+        Friend newFriend = new Friend(fromUser, toUser);
+        newFriend.acceptFriend();
+        friendRepository.save(newFriend);
+
+        return new UserProfileResponseDto(fromUser);
+    }
 
 }

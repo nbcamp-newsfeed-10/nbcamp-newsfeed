@@ -17,9 +17,17 @@ public class FriendController {
 
     private final FriendService friendService;
 
+    // 친구 신청 api
     @PostMapping("/{userId}")
     public UserProfileResponseDto friendRequest(@Auth AuthUser authUser,
                                                 @PathVariable Long userId) {
         return friendService.friendRequest(userId, authUser);
+    }
+
+    // 친구 수락 api
+    @PostMapping("/{userId}/accept")
+    public UserProfileResponseDto acceptFriendRequest(@Auth AuthUser authUser,
+                                                      @PathVariable Long userId) {
+        return friendService.acceptFriendRequest(userId, authUser);
     }
 }

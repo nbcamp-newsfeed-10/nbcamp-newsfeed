@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface FriendRepository extends JpaRepository<Friend, Long> {
     Optional<Friend> findByToUserAndFromUser(User toUser, User fromUser);
+
+    Optional<Friend> findByToUserAndFromUserAndAndFriendStatus(User toUser, User fromUser, boolean friendStatus);
 }
