@@ -1,7 +1,10 @@
 package com.sparta.nbcampnewsfeed.likeController;
+import com.sparta.nbcampnewsfeed.annotation.Auth;
+import com.sparta.nbcampnewsfeed.dto.requestDto.AuthUser;
 import com.sparta.nbcampnewsfeed.entity.User;
 import com.sparta.nbcampnewsfeed.likeDto.LikePostResponseDto;
 import com.sparta.nbcampnewsfeed.likeService.LikeService;
+import com.sparta.nbcampnewsfeed.service.UserService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -16,16 +19,14 @@ public class LikeController {
     private final LikeService likeService;
 
     @PostMapping("/posts/{postId}/likes")
-    public ResponseEntity<LikePostResponseDto> likePost(@PathVariable Long post_id, Authentication authentication) {
-        String username = authentication.getName();
-        LikePostResponseDto responseDto = likeService.likePost(post_id, username);
+    public ResponseEntity<LikePostResponseDto> likePost(@PathVariable Long postId, @Auth AuthUser authUser) {
+        LikePostResponseDto responseDto = likeService.likePost(postId, authUser);
         return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/posts/{postId}/likes")
-    public ResponseEntity<LikePostResponseDto> unlikePost(@PathVariable Long post_id, Authentication authentication) {
-        String username = authentication.getName();
-        LikePostResponseDto responseDto = likeService.unlikePost(post_id, username);
-        return ResponseEntity.ok(responseDto);
+    public String unlikePost(@PathVariable Long postId, @Auth AuthUser authUser) {
+        likeService.unlikePost(postId, authUser);
+        return "ok";
     }
 }

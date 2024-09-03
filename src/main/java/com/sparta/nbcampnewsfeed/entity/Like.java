@@ -18,16 +18,13 @@ public class Like {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id") //유저정보도 필요하니
-//    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id") //유저정보도 필요하니
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY) //게시글전용 좋아요 기능
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
-
-    @Column(nullable = false)
-    private String username; // 사용자의 이름 (Authentication에서 가져옴)
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -36,6 +33,11 @@ public class Like {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    public Like(User user, Post post) {
+        this.user = user;
+        this.post = post;
+    }
 }
 
 //@OneToMany(mappedBy = "user") // user1명이 여러 friend 좋아요 누르기
