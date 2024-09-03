@@ -2,6 +2,7 @@ package com.sparta.nbcampnewsfeed.controller;
 
 import com.sparta.nbcampnewsfeed.dto.PostRequestDto;
 import com.sparta.nbcampnewsfeed.dto.PostResponseDto;
+import com.sparta.nbcampnewsfeed.security.CustomUserDetails;
 import com.sparta.nbcampnewsfeed.service.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -27,7 +28,8 @@ public class PostController {
             Authentication authentication) {
         // 인증된 사용자 정보 가져오기
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        Long userId = Long.parseLong(userDetails.getUsername());
+        CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
+        Long userId = customUserDetails.getUser().getUserId();
 
         // 게시물 생성
         PostResponseDto responseDto = postService.createPost(userId, requestDto);
