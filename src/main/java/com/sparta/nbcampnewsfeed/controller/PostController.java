@@ -22,7 +22,7 @@ public class PostController {
     public ResponseEntity<PostResponseDto> createPost(@Auth AuthUser authUser, @RequestBody PostRequestDto requestDto) {
         System.out.println("authUser=" + authUser.getId());
         PostResponseDto responseDto = postService.createPost(authUser.getId(), requestDto);
-        return ResponseEntity.status(201).body(responseDto);
+        return ResponseEntity.ok(responseDto);
     }
 
     // 게시물 수정
