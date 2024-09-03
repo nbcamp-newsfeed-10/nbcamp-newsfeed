@@ -1,5 +1,7 @@
 package com.sparta.nbcampnewsfeed.controller;
 
+import com.sparta.nbcampnewsfeed.annotation.Auth;
+import com.sparta.nbcampnewsfeed.dto.requestDto.AuthUser;
 import com.sparta.nbcampnewsfeed.dto.responseDto.UserProfileMeResponseDto;
 import com.sparta.nbcampnewsfeed.dto.responseDto.UserProfileResponseDto;
 import com.sparta.nbcampnewsfeed.dto.requestDto.UserProfileUpdateRequestDto;
@@ -20,9 +22,9 @@ public class UserProfileController {
     @GetMapping("/{user_id}/profile")
     public ResponseEntity<?> getUserProfile(
             @PathVariable Long user_id,
-            @RequestParam(required = false) Long viewer_id) {
+            @Auth AuthUser authUser) {
 
-        if (viewer_id != null && viewer_id.equals(user_id)) {
+        if (authUser.getId() != null && authUser.getId().equals(user_id)) {
             // 자신이 자신의 프로필을 조회하는 경우 모든 정보 반환
             UserProfileMeResponseDto responseDto = userService.getUserProfileForMe(user_id);
             return ResponseEntity.ok(responseDto);
@@ -40,9 +42,10 @@ public class UserProfileController {
     @PutMapping("/{user_id}/profile")
     public ResponseEntity<UserProfileUpdateResponseDto> updateUserProfile(
             @PathVariable Long user_id,
-            @RequestBody UserProfileUpdateRequestDto updateRequest) {
+            @RequestBody UserProfileUpdateRequestDto updateRequest,
+            @Auth AuthUser authUser) {
 
-        UserProfileUpdateResponseDto responseDto = userService.updateUserProfile(user_id, updateRequest);
+        UserProfileUpdateResponseDto responseDto = userService.updateUserProfile(user_id, updateRequest, authUser);
         if (responseDto == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
