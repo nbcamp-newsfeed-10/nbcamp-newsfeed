@@ -2,8 +2,8 @@ package com.sparta.nbcampnewsfeed.service;
 
 import com.sparta.nbcampnewsfeed.config.JwtUtil;
 import com.sparta.nbcampnewsfeed.config.PasswordEncoder;
-import com.sparta.nbcampnewsfeed.dto.SignupRequestDto;
-import com.sparta.nbcampnewsfeed.dto.SignupResponseDto;
+import com.sparta.nbcampnewsfeed.dto.requestDto.SignupRequestDto;
+import com.sparta.nbcampnewsfeed.dto.responseDto.SignupResponseDto;
 import com.sparta.nbcampnewsfeed.entity.User;
 import com.sparta.nbcampnewsfeed.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,4 +40,5 @@ public class UserService {
     // 프로필 저장
     public void updateUserProfile(User profile) {
         userRepository.save(profile);
+    }
 }

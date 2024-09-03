@@ -1,8 +1,8 @@
 package com.sparta.nbcampnewsfeed.controller;
 
-import com.sparta.nbcampnewsfeed.dto.SignupRequestDto;
-import com.sparta.nbcampnewsfeed.dto.SignupResponseDto;
-import com.sparta.nbcampnewsfeed.dto.UserResponseDto;
+import com.sparta.nbcampnewsfeed.dto.requestDto.SignupRequestDto;
+import com.sparta.nbcampnewsfeed.dto.responseDto.SignupResponseDto;
+import com.sparta.nbcampnewsfeed.dto.responseDto.UserResponseDto;
 import com.sparta.nbcampnewsfeed.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/users")
-public class UserController {
+public class AuthController {
     private final UserService userService;
 
     @PostMapping("/signup")
