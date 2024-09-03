@@ -1,4 +1,4 @@
-package com.sparta.nbcampnewsfeed.dto;
+package com.sparta.nbcampnewsfeed.dto.requestDto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

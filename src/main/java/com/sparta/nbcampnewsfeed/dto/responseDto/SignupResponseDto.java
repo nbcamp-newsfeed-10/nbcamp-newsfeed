@@ -1,4 +1,4 @@
-package com.sparta.nbcampnewsfeed.dto;
+package com.sparta.nbcampnewsfeed.dto.responseDto;
 
 import com.sparta.nbcampnewsfeed.entity.User;
 import lombok.Getter;
