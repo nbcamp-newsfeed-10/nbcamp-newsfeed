@@ -1,19 +1,18 @@
 package com.sparta.nbcampnewsfeed.controller;
 
+import com.sparta.nbcampnewsfeed.annotation.Auth;
 import com.sparta.nbcampnewsfeed.dto.PostRequestDto;
 import com.sparta.nbcampnewsfeed.dto.PostResponseDto;
-import com.sparta.nbcampnewsfeed.security.CustomUserDetails;
+import com.sparta.nbcampnewsfeed.dto.requestDto.AuthUser;
 import com.sparta.nbcampnewsfeed.service.PostService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping("/posts")
 public class PostController {
     public final PostService postService;
 
@@ -23,17 +22,8 @@ public class PostController {
 
     // create Post
     @PostMapping
-    public ResponseEntity<PostResponseDto> createPost(
-            @RequestBody PostRequestDto requestDto,
-            Authentication authentication) {
-        // 인증된 사용자 정보 가져오기
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
-        Long userId = customUserDetails.getUser().getUserId();
-
-        // 게시물 생성
-        PostResponseDto responseDto = postService.createPost(userId, requestDto);
-
-        return ResponseEntity.ok(responseDto);
+    public ResponseEntity<PostResponseDto> createPost(@Auth AuthUser authUser, @RequestBody PostRequestDto requestDto) {
+        PostResponseDto responseDto = postService.createPost(authUser.getId(), requestDto);
+        return ResponseEntity.status(201).body(responseDto);
     }
 }
