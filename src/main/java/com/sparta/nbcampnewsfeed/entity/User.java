@@ -28,7 +28,7 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
-  
+
     // 비밀번호 변경 메소드
     public void changePassword(String newPassword) {
         this.password = newPassword;
