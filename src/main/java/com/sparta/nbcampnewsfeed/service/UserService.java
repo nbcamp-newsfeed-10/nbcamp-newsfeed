@@ -31,4 +31,13 @@ public class UserService {
         String token = jwtUtil.createToken(savedUser);
         return SignupResponseDto.of(savedUser, token);
     }
+    
+    // 프로필 조회
+    public User getUserProfile(Long user_id) {
+        return userRepository.findById(user_id).orElse(null);
+    }
+
+    // 프로필 저장
+    public void updateUserProfile(User profile) {
+        userRepository.save(profile);
 }
