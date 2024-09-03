@@ -49,9 +49,9 @@ public class PostService {
     @Transactional
     public PostResponseDto updatePost(Long userId, Long postId, PostRequestDto requestDto) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시물을 찾을 수 없습니다."));
 
-        // 작성자와 요청한 사용자가 같은지 확인
+        // 게시물 작성자가 맞는지 확인 & 아니면 접근 금지
         if (!post.getUser().getUserId().equals(userId)) {
             try {
                 throw new AccessDeniedException("작성자만 수정할 수 있습니다.");
@@ -61,6 +61,31 @@ public class PostService {
         }
 
         post.update(requestDto.getTitle(), requestDto.getContent());
+        return new PostResponseDto(
+                post.getPostId(),
+                post.getUser().getUserId(),
+                post.getTitle(),
+                post.getContent(),
+                post.getCreatedAt(),
+                post.getUpdatedAt()
+        );
+    }
+
+    // 게시물 조회
+    @Transactional
+    public PostResponseDto getPost(Long userId, Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시물을 찾을 수 없습니다."));
+
+        // 게시물 작성자가 맞는지 확인 & 아니면 접근 금지
+        if (!post.getUser().getUserId().equals(userId)) {
+            try {
+                throw new AccessDeniedException("작성자만 수정할 수 있습니다.");
+            } catch (AccessDeniedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         return new PostResponseDto(
                 post.getPostId(),
                 post.getUser().getUserId(),

@@ -31,4 +31,11 @@ public class PostController {
         PostResponseDto responseDto = postService.updatePost(authUser.getId(), postId, requestDto);
         return ResponseEntity.ok(responseDto);
     }
+
+    // 게시물 조회
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostResponseDto> getPost(@Auth AuthUser authUser, @PathVariable Long postId) {
+        PostResponseDto responseDto = postService.getPost(authUser.getId(), postId);
+        return ResponseEntity.ok(responseDto);
+    }
 }
