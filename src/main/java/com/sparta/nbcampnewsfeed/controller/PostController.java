@@ -22,13 +22,20 @@ public class PostController {
     public ResponseEntity<PostResponseDto> createPost(@Auth AuthUser authUser, @RequestBody PostRequestDto requestDto) {
         System.out.println("authUser=" + authUser.getId());
         PostResponseDto responseDto = postService.createPost(authUser.getId(), requestDto);
-        return ResponseEntity.status(201).body(responseDto);
+        return ResponseEntity.ok(responseDto);
     }
 
     // 게시물 수정
     @PutMapping("/{postId}")
     public ResponseEntity<PostResponseDto> updatePost(@Auth AuthUser authUser, @PathVariable Long postId, @RequestBody PostRequestDto requestDto) {
         PostResponseDto responseDto = postService.updatePost(authUser.getId(), postId, requestDto);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    // 게시물 조회
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostResponseDto> getPost(@Auth AuthUser authUser, @PathVariable Long postId) {
+        PostResponseDto responseDto = postService.getPost(authUser.getId(), postId);
         return ResponseEntity.ok(responseDto);
     }
 }
