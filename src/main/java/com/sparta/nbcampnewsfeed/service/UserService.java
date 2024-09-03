@@ -50,18 +50,12 @@ public class UserService {
     }
 
     public UserProfileMeResponseDto getUserProfileForMe(Long userId) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            return null;
-        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("The user is not me"));
         return new UserProfileMeResponseDto(user);
     }
 
     public UserProfileResponseDto getUserProfile(Long userId) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            return null;
-        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
         return new UserProfileResponseDto(user);
     }
 
