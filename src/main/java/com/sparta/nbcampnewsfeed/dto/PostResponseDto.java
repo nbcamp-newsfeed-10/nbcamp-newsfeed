@@ -1,8 +1,6 @@
 package com.sparta.nbcampnewsfeed.dto;
 
-import com.sparta.nbcampnewsfeed.entity.Post;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 

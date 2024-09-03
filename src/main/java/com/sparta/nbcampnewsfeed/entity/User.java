@@ -29,9 +29,30 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    // 생성자
-    public User(String username, String password) {
+    // 비밀번호 변경 메소드
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // 프로필 수정 메소드
+    public void updateProfile(String newUsername, String newBio) {
+        this.username = newUsername;
+        this.bio = newBio;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    // Constructor for JPA
+    protected User() {}
+
+    // 생성자를 통해 필수 값 설정
+    public User(String username, String email, String bio, String password) {
         this.username = username;
+        this.email = email;
+        this.bio = bio;
         this.password = password;
+        this.active = true;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 }

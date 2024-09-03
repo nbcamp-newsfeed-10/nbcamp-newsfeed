@@ -24,25 +24,21 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/posts/**").authenticated() // 인증된 사용자만 접근 허용
-                                .anyRequest().permitAll() // 나머지 요청은 모두 허용
+                                .requestMatchers("/users/signup").permitAll()  // 회원가입 경로에 대한 접근 허용
+                                .requestMatchers("/posts/**").authenticated()
+                                .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")  // 사용자 정의 로그인 페이지
+                        .loginPage("/login")
                         .permitAll()
                 )
                 .httpBasic(httpBasic -> httpBasic
                         .realmName("NBCamp")
                 );
 
-        // 필요한 경우 다른 방식으로 CSRF 설정을 비활성화하거나 관리할 수 있습니다.
-        // http.csrf().disable();  // 이와 같이 비활성화할 수 있지만, 실제로는 필요한 경우에만 설정하세요.
+        // CSRF 비활성화
+        http.csrf(csrf -> csrf.disable());
 
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }
