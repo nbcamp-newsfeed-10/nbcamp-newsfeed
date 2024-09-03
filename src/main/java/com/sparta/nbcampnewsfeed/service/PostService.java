@@ -19,7 +19,7 @@ public class PostService {
         this.userRepository = userRepository;
     }
 
-    // create Post
+    // 게시물 작성
     @Transactional
     public PostResponseDto createPost(Long userId, PostRequestDto requestDto) {
         // 사용자 조회
@@ -41,5 +41,26 @@ public class PostService {
                 post.getCreatedAt(),
                 post.getUpdatedAt()
         );
+    }
+
+    // 게시물 수정
+    @Transactional
+    public PostResponseDto updatePost(Long userId, Long postId, PostRequestDto requestDto) {
+        Post post = postRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
+
+        // 작성자오 요청한 사용자가 같은지 확인
+        if (!post.getUser().getUserId().equals(userId)) {
+            throw new SecurityException("작성자만 수정할 수 있습니다.");
+        }
+
+        post.update(requestDto.getTitle(), requestDto.getContent());
+        return new PostResponseDto(
+                post.getPostId(),
+                post.getUser().getUserId(),
+                post.getTitle(),
+                post.getContent(),
+                post.getCreatedAt(),
+                post.getUpdatedAt());
     }
 }
