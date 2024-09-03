@@ -2,6 +2,7 @@ package com.sparta.nbcampnewsfeed.controller;
 
 import com.sparta.nbcampnewsfeed.annotation.Auth;
 import com.sparta.nbcampnewsfeed.dto.requestDto.AuthUser;
+import com.sparta.nbcampnewsfeed.dto.requestDto.WithdrawRequestDto;
 import com.sparta.nbcampnewsfeed.dto.responseDto.UserProfileMeResponseDto;
 import com.sparta.nbcampnewsfeed.dto.responseDto.UserProfileResponseDto;
 import com.sparta.nbcampnewsfeed.dto.requestDto.UserProfileUpdateRequestDto;
@@ -50,5 +51,13 @@ public class UserProfileController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(responseDto);
+    }
+
+    // 회원 탈퇴
+    @DeleteMapping("/withdraw")
+    public String withdraw(@RequestBody WithdrawRequestDto requestDto,
+                           @Auth AuthUser authUser) {
+        userService.withdraw(requestDto, authUser);
+        return "ok";
     }
 }

@@ -42,6 +42,15 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
+    // 회원 탈퇴를 위한 프로필 비활성화
+    public void withdraw() {
+        this.active = false;
+        // 이메일을 제외한 모든 데이터 삭제
+        this.username = null;
+        this.password = null;
+        this.bio = null;
+    }
+
     // Constructor for JPA
     protected User() {}
 
