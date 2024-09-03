@@ -2,6 +2,7 @@ package com.sparta.nbcampnewsfeed.service;
 
 import com.sparta.nbcampnewsfeed.config.JwtUtil;
 import com.sparta.nbcampnewsfeed.config.PasswordEncoder;
+import com.sparta.nbcampnewsfeed.dto.requestDto.SigninRequest;
 import com.sparta.nbcampnewsfeed.dto.requestDto.SignupRequestDto;
 import com.sparta.nbcampnewsfeed.dto.responseDto.SignupResponseDto;
 import com.sparta.nbcampnewsfeed.entity.User;
@@ -28,8 +29,20 @@ public class UserService {
         User user = new User(signUpRequestDto.getUsername(), signUpRequestDto.getEmail(), signUpRequestDto.getBio(),
                 passwordEncoder.encode(signUpRequestDto.getPassword()));
         User savedUser = userRepository.save(user);
-        String token = jwtUtil.createToken(savedUser);
+        String token = jwtUtil.createToken(savedUser.getUserId(), savedUser.getEmail());
         return SignupResponseDto.of(savedUser, token);
+    }
+
+    public String signin(SigninRequest signinRequest) {
+        User user = userRepository.findByEmail(signinRequest.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // 비밀번호 불일치
+        if (!passwordEncoder.matches(signinRequest.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("wrong password");
+        }
+
+        return jwtUtil.createToken(user.getUserId(), user.getEmail());
     }
     
     // 프로필 조회
