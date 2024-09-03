@@ -9,6 +9,8 @@ import com.sparta.nbcampnewsfeed.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
+
 @Service
 public class PostService {
     private final PostRepository postRepository;
@@ -46,12 +48,16 @@ public class PostService {
     // 게시물 수정
     @Transactional
     public PostResponseDto updatePost(Long userId, Long postId, PostRequestDto requestDto) {
-        Post post = postRepository.findById(userId)
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
 
-        // 작성자오 요청한 사용자가 같은지 확인
+        // 작성자와 요청한 사용자가 같은지 확인
         if (!post.getUser().getUserId().equals(userId)) {
-            throw new SecurityException("작성자만 수정할 수 있습니다.");
+            try {
+                throw new AccessDeniedException("작성자만 수정할 수 있습니다.");
+            } catch (AccessDeniedException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         post.update(requestDto.getTitle(), requestDto.getContent());
@@ -61,6 +67,7 @@ public class PostService {
                 post.getTitle(),
                 post.getContent(),
                 post.getCreatedAt(),
-                post.getUpdatedAt());
+                post.getUpdatedAt()
+        );
     }
 }
