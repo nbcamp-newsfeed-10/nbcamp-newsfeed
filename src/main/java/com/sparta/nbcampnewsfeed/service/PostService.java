@@ -9,6 +9,8 @@ import com.sparta.nbcampnewsfeed.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
+
 @Service
 public class PostService {
     private final PostRepository postRepository;
@@ -19,7 +21,7 @@ public class PostService {
         this.userRepository = userRepository;
     }
 
-    // create Post
+    // 게시물 작성
     @Transactional
     public PostResponseDto createPost(Long userId, PostRequestDto requestDto) {
         // 사용자 조회
@@ -33,6 +35,32 @@ public class PostService {
         postRepository.save(post);
 
         // post 엔티티를 PostResponseDto 로 변환하여 반환
+        return new PostResponseDto(
+                post.getPostId(),
+                post.getUser().getUserId(),
+                post.getTitle(),
+                post.getContent(),
+                post.getCreatedAt(),
+                post.getUpdatedAt()
+        );
+    }
+
+    // 게시물 수정
+    @Transactional
+    public PostResponseDto updatePost(Long userId, Long postId, PostRequestDto requestDto) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시물을 찾을 수 없습니다."));
+
+        // 작성자와 요청한 사용자가 같은지 확인
+        if (!post.getUser().getUserId().equals(userId)) {
+            try {
+                throw new AccessDeniedException("작성자만 수정할 수 있습니다.");
+            } catch (AccessDeniedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        post.update(requestDto.getTitle(), requestDto.getContent());
         return new PostResponseDto(
                 post.getPostId(),
                 post.getUser().getUserId(),
