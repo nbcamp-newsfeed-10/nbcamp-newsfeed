@@ -124,7 +124,7 @@ public class UserService {
 
     private boolean isValidPassword(String password) {
         // 최소 8자, 대소문자 포함 영문, 숫자, 특수문자 포함 형식 검증
-        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[~!@#$%^&*()_+])[A-Za-z\\d~!@#$%^&*()_+]{8,}$";
+        String passwordPattern = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
         return password.matches(passwordPattern);
     }
 }
