@@ -127,28 +127,31 @@ public class PostService {
         postRepository.delete(post);
     }
 
-    // 친구 및 본인의 게시물 조회 (페이지네이션 조회 후 List 로 변환)
+    // 친구들의 게시물 조회 (본인 게시물 제외)
     @Transactional
     public List<PostResponseDto> getNewsfeed(Long userId, int page, int size) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
 
-        // 1. 친구 목록에서 친구들의 UserId를 추출
-        List<Friend> friends = friendRepository.findAllByToUserAndFriendStatus(user, true);
-
-        // 친구들의 userId를 추출
-        List<Long> friendIds = friends.stream()
-                .map(friend -> friend.getFromUser().getUserId())  // 친구의 userId 가져오기
+        // 1. 친구 목록에서 친구들의 userId를 추출 (친구 상태가 true인 경우)
+        List<Long> friendIds = friendRepository.findAllByToUserAndFriendStatus(user, true).stream()
+                .map(friend -> friend.getFromUser().getUserId())  // 내가 받은 요청에서 친구의 userId 가져오기
                 .collect(Collectors.toList());
 
-        // 2. 자신의 게시물도 함께 조회되도록 본인의 userId를 추가
-        friendIds.add(user.getUserId());
+        friendIds.addAll(friendRepository.findAllByFromUserAndFriendStatus(user, true).stream()
+                .map(friend -> friend.getToUser().getUserId())  // 내가 보낸 요청에서 친구의 userId 가져오기
+                .collect(Collectors.toList()));
 
-        // 3. 친구 및 자신의 게시물 조회 (페이지네이션 설정)
+        // 본인의 userId는 제외
+        friendIds = friendIds.stream()
+                .filter(friendUserId -> !friendUserId.equals(user.getUserId()))  // 본인의 userId 제외
+                .collect(Collectors.toList());
+
+        // 2. 친구들의 게시물만 조회 (페이지네이션 설정)
         Page<Post> newsfeedPage = postRepository.findAllByUserUserIdInOrderByCreatedAtDesc(
                 friendIds, PageRequest.of(page, size));
 
-        // 4. Page<Post>를 List<PostResponseDto>로 변환
+        // 3. Page<Post>를 List<PostResponseDto>로 변환
         return newsfeedPage.stream()
                 .map(post -> new PostResponseDto(
                         post.getPostId(),
@@ -160,4 +163,5 @@ public class PostService {
                 ))
                 .collect(Collectors.toList());
     }
+
 }

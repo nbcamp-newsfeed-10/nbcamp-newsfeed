@@ -12,6 +12,9 @@ public interface FriendRepository extends JpaRepository<Friend, Long> {
 
     Optional<Friend> findByToUserAndFromUserAndAndFriendStatus(User toUser, User fromUser, boolean friendStatus);
 
-    // 친구 목록 조회
+    // 내가 받은 친구 요청 중 친구 상태가 true인 경우 (toUser가 본인인 경우)
     List<Friend> findAllByToUserAndFriendStatus(User toUser, boolean friendStatus);
+
+    // 내가 보낸 친구 요청 중 친구 상태가 true인 경우 (fromUser가 본인인 경우)
+    List<Friend> findAllByFromUserAndFriendStatus(User fromUser, boolean friendStatus);
 }
