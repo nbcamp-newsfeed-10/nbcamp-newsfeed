@@ -34,7 +34,7 @@ public class UserService {
 
         // 중복된 email 가입 시도시
         userRepository.findByEmail(signUpRequestDto.getEmail())
-                .ifPresent(u -> {throw new IllegalArgumentException();});
+                .ifPresent(u -> {throw new IllegalArgumentException("이미 존재하는 회원 email 입니다.");});
 
         User user = new User(signUpRequestDto.getUsername(), signUpRequestDto.getEmail(), signUpRequestDto.getBio(),
                 passwordEncoder.encode(signUpRequestDto.getPassword()));
