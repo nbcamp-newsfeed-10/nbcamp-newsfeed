@@ -127,26 +127,29 @@ public class PostService {
         postRepository.delete(post);
     }
 
-    // 친구들의 게시물 조회 (페이지네이션 조회)
+    // 친구 및 본인의 게시물 조회 (페이지네이션 조회 후 List 로 변환)
     @Transactional
-    public Page<PostResponseDto> getNewsfeed(Long userId, int page, int size) {
-        // 사용자 조회
+    public List<PostResponseDto> getNewsfeed(Long userId, int page, int size) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
 
-        // 사용자의 친구 목록 조회
+        // 1. 친구 목록에서 친구들의 UserId를 추출
         List<Friend> friends = friendRepository.findAllByToUserAndFriendStatus(user, true);
 
-        // 친구들의 Id 추출
+        // 친구들의 userId를 추출
         List<Long> friendIds = friends.stream()
-                .map(friend -> friend.getFromUser().getUserId())
+                .map(friend -> friend.getFromUser().getUserId())  // 친구의 userId 가져오기
                 .collect(Collectors.toList());
 
-        // 페이지네이션 설정
-        PageRequest pageRequest = PageRequest.of(page, size);
+        // 2. 자신의 게시물도 함께 조회되도록 본인의 userId를 추가
+        friendIds.add(user.getUserId());
 
-        // 친구들의 게시물만 조회 (친구들의 Id를 사용)
-        return postRepository.findAllByUserUserIdInOrderByCreatedAtDesc(friendIds, pageRequest)
+        // 3. 친구 및 자신의 게시물 조회 (페이지네이션 설정)
+        Page<Post> newsfeedPage = postRepository.findAllByUserUserIdInOrderByCreatedAtDesc(
+                friendIds, PageRequest.of(page, size));
+
+        // 4. Page<Post>를 List<PostResponseDto>로 변환
+        return newsfeedPage.stream()
                 .map(post -> new PostResponseDto(
                         post.getPostId(),
                         post.getUser().getUserId(),
@@ -154,6 +157,7 @@ public class PostService {
                         post.getContent(),
                         post.getCreatedAt(),
                         post.getUpdatedAt()
-                ));
+                ))
+                .collect(Collectors.toList());
     }
 }
