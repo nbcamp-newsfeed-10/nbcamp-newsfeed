@@ -10,16 +10,16 @@ public class PostResponseDto {
     private final Long userId;
     private final String title;
     private final String content;
-    private final LocalDateTime create_at;
-    private final LocalDateTime update_at;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 
     // Post 엔티티를 Dto 로 변환하는 메서드
-    public PostResponseDto(Long postId, Long userId, String title, String content, LocalDateTime create_at, LocalDateTime update_at) {
+    public PostResponseDto(Long postId, Long userId, String title, String content, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.postId = postId;
         this.userId = userId;
         this.title = title;
         this.content = content;
-        this.create_at = create_at;
-        this.update_at = update_at;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 }

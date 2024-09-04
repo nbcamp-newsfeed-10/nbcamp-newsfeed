@@ -4,11 +4,17 @@ import com.sparta.nbcampnewsfeed.annotation.Auth;
 import com.sparta.nbcampnewsfeed.dto.PostRequestDto;
 import com.sparta.nbcampnewsfeed.dto.PostResponseDto;
 import com.sparta.nbcampnewsfeed.dto.requestDto.AuthUser;
+import com.sparta.nbcampnewsfeed.entity.Post;
 import com.sparta.nbcampnewsfeed.service.PostService;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.Response;
+import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedModel;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/posts")
@@ -46,5 +52,14 @@ public class PostController {
     public ResponseEntity<Void> deletePost(@Auth AuthUser authUser, @PathVariable Long postId) {
         postService.deletePost(authUser.getId(), postId);
         return ResponseEntity.noContent().build();
+    }
+
+    // 뉴스피드 조회
+    @GetMapping("/newsfeed")
+    public ResponseEntity<List<PostResponseDto>> getNewsFeed(@Auth AuthUser authUser,
+                                                             @RequestParam(defaultValue = "1") int page,
+                                                             @RequestParam(defaultValue = "10") int size) {
+        List<PostResponseDto> newsfeed = postService.getNewsfeed(authUser.getId(), page - 1, size);
+        return ResponseEntity.ok(newsfeed);
     }
 }

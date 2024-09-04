@@ -2,25 +2,36 @@ package com.sparta.nbcampnewsfeed.service;
 
 import com.sparta.nbcampnewsfeed.dto.PostRequestDto;
 import com.sparta.nbcampnewsfeed.dto.PostResponseDto;
+import com.sparta.nbcampnewsfeed.dto.requestDto.AuthUser;
+import com.sparta.nbcampnewsfeed.entity.Friend;
 import com.sparta.nbcampnewsfeed.entity.Post;
 import com.sparta.nbcampnewsfeed.entity.User;
+import com.sparta.nbcampnewsfeed.repository.FriendRepository;
 import com.sparta.nbcampnewsfeed.repository.PostRepository;
 import com.sparta.nbcampnewsfeed.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final FriendRepository friendRepository;
+    private final FriendService friendService;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository, UserService userService) {
+    public PostService(PostRepository postRepository, UserRepository userRepository, UserService userService, FriendRepository friendRepository, FriendService friendService) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.userService = userService;
+        this.friendRepository = friendRepository;
+        this.friendService = friendService;
     }
 
     // 게시물 작성
@@ -114,5 +125,39 @@ public class PostService {
         }
 
         postRepository.delete(post);
+    }
+
+    // 친구 및 본인의 게시물 조회 (페이지네이션 조회 후 List 로 변환)
+    @Transactional
+    public List<PostResponseDto> getNewsfeed(Long userId, int page, int size) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
+
+        // 1. 친구 목록에서 친구들의 UserId를 추출
+        List<Friend> friends = friendRepository.findAllByToUserAndFriendStatus(user, true);
+
+        // 친구들의 userId를 추출
+        List<Long> friendIds = friends.stream()
+                .map(friend -> friend.getFromUser().getUserId())  // 친구의 userId 가져오기
+                .collect(Collectors.toList());
+
+        // 2. 자신의 게시물도 함께 조회되도록 본인의 userId를 추가
+        friendIds.add(user.getUserId());
+
+        // 3. 친구 및 자신의 게시물 조회 (페이지네이션 설정)
+        Page<Post> newsfeedPage = postRepository.findAllByUserUserIdInOrderByCreatedAtDesc(
+                friendIds, PageRequest.of(page, size));
+
+        // 4. Page<Post>를 List<PostResponseDto>로 변환
+        return newsfeedPage.stream()
+                .map(post -> new PostResponseDto(
+                        post.getPostId(),
+                        post.getUser().getUserId(),
+                        post.getTitle(),
+                        post.getContent(),
+                        post.getCreatedAt(),
+                        post.getUpdatedAt()
+                ))
+                .collect(Collectors.toList());
     }
 }
