@@ -1,11 +1,13 @@
 package com.sparta.nbcampnewsfeed.profile.service;
 
+import com.sparta.nbcampnewsfeed.ApiPayload.Code.Status.ErrorStatus;
 import com.sparta.nbcampnewsfeed.auth.dto.requestDto.AuthUser;
 import com.sparta.nbcampnewsfeed.auth.dto.requestDto.SigninRequest;
 import com.sparta.nbcampnewsfeed.auth.dto.requestDto.SignupRequestDto;
 import com.sparta.nbcampnewsfeed.config.JwtUtil;
 import com.sparta.nbcampnewsfeed.config.PasswordEncoder;
 import com.sparta.nbcampnewsfeed.auth.dto.responseDto.SignupResponseDto;
+import com.sparta.nbcampnewsfeed.exception.ApiException;
 import com.sparta.nbcampnewsfeed.profile.dto.requestDto.UserProfileUpdateRequestDto;
 import com.sparta.nbcampnewsfeed.profile.dto.requestDto.WithdrawRequestDto;
 import com.sparta.nbcampnewsfeed.profile.dto.responseDto.UserProfileMeResponseDto;
@@ -34,7 +36,7 @@ public class UserService {
 
         // 중복된 email 가입 시도시
         userRepository.findByEmail(signUpRequestDto.getEmail())
-                .ifPresent(u -> {throw new IllegalArgumentException("이미 존재하는 회원 email 입니다.");});
+                .ifPresent(u -> {throw new ApiException(ErrorStatus._BAD_REQUEST_EMAIL);});
 
         User user = new User(signUpRequestDto.getUsername(), signUpRequestDto.getEmail(), signUpRequestDto.getBio(),
                 passwordEncoder.encode(signUpRequestDto.getPassword()));
@@ -45,28 +47,28 @@ public class UserService {
 
     public String signin(SigninRequest signinRequest) {
         User user = userRepository.findByEmail(signinRequest.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
         // 탈퇴한 회원
         if (!user.isActive()) {
-            throw new IllegalArgumentException("withdraw user");
+            throw new ApiException(ErrorStatus._BAD_REQUEST_USER);
         }
 
         // 비밀번호 불일치
         if (!passwordEncoder.matches(signinRequest.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("wrong password");
+            throw new ApiException(ErrorStatus._BAD_REQUEST_PASSWORD);
         }
 
         return jwtUtil.createToken(user.getUserId(), user.getEmail());
     }
 
     public UserProfileMeResponseDto getUserProfileForMe(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("The user is not me"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
         return new UserProfileMeResponseDto(user);
     }
 
     public UserProfileResponseDto getUserProfile(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
         return new UserProfileResponseDto(user);
     }
 
@@ -75,26 +77,20 @@ public class UserService {
                                                           AuthUser authUser) {
         // 로그인 회원과 수정하려는 프로필 회원이 다를 때
         if (!authUser.getId().equals(userId)) {
-            throw new IllegalArgumentException("can not update other profile");
+            throw new ApiException(ErrorStatus._UNAUTHORIZED);
         }
 
-        User user = userRepository.findById(userId).orElse(null);
-        if (user == null) {
-            return null;
-        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
         // 비밀번호 변경 처리
         if (updateRequest.getCurrentPassword() != null && updateRequest.getNewPassword() != null) {
             if (!passwordEncoder.matches(updateRequest.getCurrentPassword(), user.getPassword())) {
-                throw new IllegalArgumentException("Current password is incorrect");
+                throw new ApiException(ErrorStatus._BAD_REQUEST_PASSWORD);
             }
 
             if (passwordEncoder.matches(updateRequest.getNewPassword(), user.getPassword())) {
-                throw new IllegalArgumentException("New password cannot be the same as the current password");
-            }
-
-            if (!isValidPassword(updateRequest.getNewPassword())) {
-                throw new IllegalArgumentException("New password does not meet the required format");
+                throw new ApiException(ErrorStatus._BAD_REQUEST_SAME_PASSWORD);
             }
 
             user.changePassword(passwordEncoder.encode(updateRequest.getNewPassword()));
@@ -111,20 +107,20 @@ public class UserService {
     public void withdraw(WithdrawRequestDto requestDto, AuthUser authUser) {
         // 로그인 회원과 탈퇴를 시도하는 회원이 다를 때
         if (!authUser.getEmail().equals(requestDto.getEmail())) {
-            throw new IllegalArgumentException("자신의 계정만 삭제 가능합니다.");
+            throw new ApiException(ErrorStatus._UNAUTHORIZED);
         }
 
         User user = userRepository.findByEmail(requestDto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
         // 이미 탈퇴한 회원
         if (!user.isActive()) {
-            throw new IllegalArgumentException("withdraw user");
+            throw new ApiException(ErrorStatus._BAD_REQUEST_USER);
         }
 
         // 비밀번호 불일치
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("Incorrect password");
+            throw new ApiException(ErrorStatus._BAD_REQUEST_PASSWORD);
         }
 
         // 작성한 게시물 전체 삭제
@@ -133,11 +129,5 @@ public class UserService {
         commentService.deleteAllComment(authUser.getId());
 
         user.withdraw();
-    }
-
-    private boolean isValidPassword(String password) {
-        // 최소 8자, 대소문자 포함 영문, 숫자, 특수문자 포함 형식 검증
-        String passwordPattern = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
-        return password.matches(passwordPattern);
     }
 }

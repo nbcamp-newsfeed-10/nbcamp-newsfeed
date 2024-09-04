@@ -1,5 +1,6 @@
 package com.sparta.nbcampnewsfeed.comment.service;
 
+import com.sparta.nbcampnewsfeed.ApiPayload.Code.Status.ErrorStatus;
 import com.sparta.nbcampnewsfeed.comment.dto.requestDto.CommentRequestDto;
 import com.sparta.nbcampnewsfeed.comment.dto.requestDto.CommentUpdateRequestDto;
 import com.sparta.nbcampnewsfeed.comment.dto.responseDto.CommentDetailResponseDto;
@@ -7,6 +8,7 @@ import com.sparta.nbcampnewsfeed.comment.dto.responseDto.CommentResponseDto;
 import com.sparta.nbcampnewsfeed.comment.dto.responseDto.CommentSimpleResponseDto;
 import com.sparta.nbcampnewsfeed.comment.dto.responseDto.CommentUpdateResponseDto;
 import com.sparta.nbcampnewsfeed.comment.entity.Comment;
+import com.sparta.nbcampnewsfeed.exception.ApiException;
 import com.sparta.nbcampnewsfeed.post.entity.Post;
 import com.sparta.nbcampnewsfeed.profile.entity.User;
 import com.sparta.nbcampnewsfeed.comment.repository.CommentRepository;
@@ -29,8 +31,8 @@ public class CommentService {
 
     @Transactional
     public CommentResponseDto createComment(CommentRequestDto commentRequestDto, Long requesterId) {
-        User user = userRepository.findById(commentRequestDto.getUserId()).orElseThrow(() -> new NullPointerException("유저 ID를 찾을 수 없습니다."));
-        Post post = postRepository.findById(commentRequestDto.getPostId()).orElseThrow(() -> new NullPointerException("게시글 ID를 찾을 수 없습니다."));
+        User user = userRepository.findById(commentRequestDto.getUserId()).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
+        Post post = postRepository.findById(commentRequestDto.getPostId()).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_POST));
 
         Comment comment = new Comment(post, user, commentRequestDto.getContent());
         commentRepository.save(comment);
@@ -38,7 +40,7 @@ public class CommentService {
         Long commentAuthorId = comment.getUser().getUserId();
 
         if (!requesterId.equals(commentAuthorId)) {
-            throw new IllegalArgumentException("댓글 작성자만 이 댓글을 수정할 수 있습니다.");
+            throw new ApiException(ErrorStatus._UNAUTHORIZED);
         }
 
         return new CommentResponseDto(comment);
@@ -49,19 +51,19 @@ public class CommentService {
     }
 
     public CommentDetailResponseDto getComment(Long commentId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NullPointerException("ID를 찾을 수 없습니다."));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMENT));
         return new CommentDetailResponseDto(comment);
     }
 
     @Transactional
     public CommentUpdateResponseDto updateComment(Long commentId, CommentUpdateRequestDto commentUpdateRequestDto, Long requesterId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NullPointerException("ID를 찾을 수 없습니다."));
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMENT));
 
 
         Long commentAuthorId = comment.getUser().getUserId();
 
         if (!requesterId.equals(commentAuthorId)) {
-            throw new IllegalArgumentException("댓글 작성자만 이 댓글을 수정할 수 있습니다.");
+            throw new ApiException(ErrorStatus._UNAUTHORIZED);
         }
 
         comment.updateContent(commentUpdateRequestDto.getContent());
@@ -71,7 +73,7 @@ public class CommentService {
     @Transactional
     public void deleteComment(Long commentId, Long requesterId) {
         Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NullPointerException("댓글 ID를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_COMMENT));
 
         // 댓글 작성자와 게시글 작성자 ID를 가져옴
         Long commentAuthorId = comment.getUser().getUserId();
@@ -79,7 +81,7 @@ public class CommentService {
 
         // 요청자가 댓글 작성자 또는 게시글 작성자인지 확인하는 코드
         if (!requesterId.equals(commentAuthorId) && !requesterId.equals(postAuthorId)) {
-            throw new IllegalArgumentException("댓글 작성자나 게시글 작성자만 이 댓글을 삭제할 수 있습니다.");
+            throw new ApiException(ErrorStatus._UNAUTHORIZED);
         }
 
         commentRepository.delete(comment);
@@ -88,7 +90,7 @@ public class CommentService {
     @Transactional
     public void deleteAllComment(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
         List<Comment> comments = commentRepository.findAllByUser(user);
         commentRepository.deleteAll(comments);
     }

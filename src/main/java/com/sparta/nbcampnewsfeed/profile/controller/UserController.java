@@ -9,6 +9,7 @@ import com.sparta.nbcampnewsfeed.profile.dto.responseDto.UserProfileResponseDto;
 import com.sparta.nbcampnewsfeed.profile.dto.requestDto.UserProfileUpdateRequestDto;
 import com.sparta.nbcampnewsfeed.profile.dto.responseDto.UserProfileUpdateResponseDto;
 import com.sparta.nbcampnewsfeed.profile.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,7 @@ public class UserController {
     @PutMapping("/{userId}/profile")
     public ApiResponse<UserProfileUpdateResponseDto> updateUserProfile(
             @PathVariable Long userId,
-            @RequestBody UserProfileUpdateRequestDto updateRequest,
+            @Valid @RequestBody UserProfileUpdateRequestDto updateRequest,
             @Auth AuthUser authUser) {
 
         UserProfileUpdateResponseDto responseDto = userService.updateUserProfile(userId, updateRequest, authUser);
