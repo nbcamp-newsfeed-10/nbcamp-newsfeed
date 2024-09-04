@@ -1,8 +1,7 @@
-package com.sparta.nbcampnewsfeed.dto.response;
+package com.sparta.nbcampnewsfeed.dto.responseDto;
 
 import com.sparta.nbcampnewsfeed.entity.Comment;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
 public class CommentSimpleResponseDto {

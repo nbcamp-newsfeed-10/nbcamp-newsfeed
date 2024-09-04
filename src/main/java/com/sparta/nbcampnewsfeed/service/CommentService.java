@@ -1,11 +1,11 @@
 package com.sparta.nbcampnewsfeed.service;
 
-import com.sparta.nbcampnewsfeed.dto.request.CommentRequestDto;
-import com.sparta.nbcampnewsfeed.dto.request.CommentUpdateRequestDto;
-import com.sparta.nbcampnewsfeed.dto.response.CommentDetailResponseDto;
-import com.sparta.nbcampnewsfeed.dto.response.CommentResponseDto;
-import com.sparta.nbcampnewsfeed.dto.response.CommentSimpleResponseDto;
-import com.sparta.nbcampnewsfeed.dto.response.CommentUpdateResponseDto;
+import com.sparta.nbcampnewsfeed.dto.requestDto.CommentRequestDto;
+import com.sparta.nbcampnewsfeed.dto.requestDto.CommentUpdateRequestDto;
+import com.sparta.nbcampnewsfeed.dto.responseDto.CommentDetailResponseDto;
+import com.sparta.nbcampnewsfeed.dto.responseDto.CommentResponseDto;
+import com.sparta.nbcampnewsfeed.dto.responseDto.CommentSimpleResponseDto;
+import com.sparta.nbcampnewsfeed.dto.responseDto.CommentUpdateResponseDto;
 import com.sparta.nbcampnewsfeed.entity.Comment;
 import com.sparta.nbcampnewsfeed.entity.Post;
 import com.sparta.nbcampnewsfeed.entity.User;

@@ -1,16 +1,10 @@
 package com.sparta.nbcampnewsfeed.controller;
 
 import com.sparta.nbcampnewsfeed.annotation.Auth;
-import com.sparta.nbcampnewsfeed.dto.PostRequestDto;
-import com.sparta.nbcampnewsfeed.dto.PostResponseDto;
+import com.sparta.nbcampnewsfeed.dto.requestDto.PostRequestDto;
+import com.sparta.nbcampnewsfeed.dto.responseDto.PostResponseDto;
 import com.sparta.nbcampnewsfeed.dto.requestDto.AuthUser;
-import com.sparta.nbcampnewsfeed.entity.Post;
 import com.sparta.nbcampnewsfeed.service.PostService;
-import jakarta.transaction.Transactional;
-import org.apache.coyote.Response;
-import org.springframework.data.domain.Page;
-import org.springframework.data.web.PagedModel;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

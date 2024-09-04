@@ -1,13 +1,12 @@
-package com.sparta.nbcampnewsfeed.dto.response;
+package com.sparta.nbcampnewsfeed.dto.responseDto;
 
 import com.sparta.nbcampnewsfeed.entity.Comment;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
-public class CommentDetailResponseDto {
+public class CommentResponseDto {
 
     private final Long commentId;
     private final Long postId;
@@ -15,7 +14,7 @@ public class CommentDetailResponseDto {
     private final String content;
     private final LocalDateTime createdAt;
 
-    public CommentDetailResponseDto(Long commentId, Long postId, Long userId, String content, LocalDateTime createdAt) {
+    public CommentResponseDto(Long commentId, Long postId, Long userId, String content, LocalDateTime createdAt) {
         this.commentId = commentId;
         this.postId = postId;
         this.userId = userId;
@@ -23,7 +22,7 @@ public class CommentDetailResponseDto {
         this.createdAt = createdAt;
     }
 
-    public CommentDetailResponseDto(Comment comment) {
+    public CommentResponseDto(Comment comment) {
         this.commentId = comment.getCommentId();
         this.postId = comment.getPost().getPostId();
         this.userId = comment.getUser().getUserId();
