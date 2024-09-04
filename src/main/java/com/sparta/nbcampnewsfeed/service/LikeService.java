@@ -1,11 +1,11 @@
-package com.sparta.nbcampnewsfeed.likeService;
+package com.sparta.nbcampnewsfeed.service;
 
 import com.sparta.nbcampnewsfeed.dto.requestDto.AuthUser;
 import com.sparta.nbcampnewsfeed.entity.Like;
 import com.sparta.nbcampnewsfeed.entity.Post;
 import com.sparta.nbcampnewsfeed.entity.User;
-import com.sparta.nbcampnewsfeed.likeDto.LikePostResponseDto;
-import com.sparta.nbcampnewsfeed.likeRepository.LikeRepository;
+import com.sparta.nbcampnewsfeed.dto.responseDto.LikePostResponseDto;
+import com.sparta.nbcampnewsfeed.repository.LikeRepository;
 import com.sparta.nbcampnewsfeed.repository.PostRepository;
 import com.sparta.nbcampnewsfeed.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

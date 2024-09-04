@@ -1,4 +1,4 @@
-package com.sparta.nbcampnewsfeed.dto.request;
+package com.sparta.nbcampnewsfeed.dto.requestDto;
 
 import lombok.Getter;
 

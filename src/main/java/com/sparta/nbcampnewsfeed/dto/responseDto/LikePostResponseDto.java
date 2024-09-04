@@ -1,4 +1,4 @@
-package com.sparta.nbcampnewsfeed.likeDto;
+package com.sparta.nbcampnewsfeed.dto.responseDto;
 
 import com.sparta.nbcampnewsfeed.entity.Like;
 import lombok.Getter;

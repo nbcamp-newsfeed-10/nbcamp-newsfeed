@@ -31,13 +31,18 @@ public class FriendService {
 
         // 자기 자신에게 친구 신청 불가
         if (userId.equals(authUser.getId())) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("자기 자신에게 친구 신청을 할 수 없습니다.");
         }
 
         // 이미 친구인 경우 or 친구 신청을 한 경우 다시 친구 신청 불가
         friendRepository.findByToUserAndFromUser(user, fromUser)
                 .ifPresent(u -> {
                     throw new IllegalArgumentException("이미 친구이거나 친구 신청을 한 회원입니다.");});
+
+        // 이미 친구 신청을 받은 경우 친구 신청 불가
+        friendRepository.findByToUserAndFromUser(fromUser, user)
+                .ifPresent(u -> {
+                    throw new IllegalArgumentException("이미 해당 회원으로부터 친구 신청을 받은 상태입니다.");});
 
         Friend friend = new Friend(user, fromUser);
         friendRepository.save(friend);
@@ -60,7 +65,7 @@ public class FriendService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 회원에게 받은 친구 추가 요청이 없습니다"));
 
         // 이미 친구 관계인 경우
-        friendRepository.findByToUserAndFromUserAndAndFriendStatus(toUser, fromUser, true)
+        friendRepository.findByToUserAndFromUserAndFriendStatus(toUser, fromUser, true)
                 .ifPresent(u -> {throw new IllegalArgumentException("이미 친구인 회원입니다.");});
 
         // 친구 관계 true 로 설정
@@ -80,9 +85,9 @@ public class FriendService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // 친구가 아닐 때 삭제를 시도한 경우
-        Friend friend1 = friendRepository.findByToUserAndFromUserAndAndFriendStatus(user, deleteUser, true)
+        Friend friend1 = friendRepository.findByToUserAndFromUserAndFriendStatus(user, deleteUser, true)
                 .orElseThrow(() -> new IllegalArgumentException("친구가 아닌 회원입니다."));
-        Friend friend2 = friendRepository.findByToUserAndFromUserAndAndFriendStatus(deleteUser, user, true)
+        Friend friend2 = friendRepository.findByToUserAndFromUserAndFriendStatus(deleteUser, user, true)
                 .orElseThrow(() -> new IllegalArgumentException("친구가 아닌 회원입니다."));
 
         // 친구 관계 삭제

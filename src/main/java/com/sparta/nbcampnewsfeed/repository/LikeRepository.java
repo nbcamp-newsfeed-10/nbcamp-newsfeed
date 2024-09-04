@@ -1,4 +1,4 @@
-package com.sparta.nbcampnewsfeed.likeRepository;
+package com.sparta.nbcampnewsfeed.repository;
 
 import com.sparta.nbcampnewsfeed.entity.Like;
 import com.sparta.nbcampnewsfeed.entity.Post;

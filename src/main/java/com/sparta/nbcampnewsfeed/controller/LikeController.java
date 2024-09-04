@@ -1,14 +1,10 @@
-package com.sparta.nbcampnewsfeed.likeController;
+package com.sparta.nbcampnewsfeed.controller;
 import com.sparta.nbcampnewsfeed.annotation.Auth;
 import com.sparta.nbcampnewsfeed.dto.requestDto.AuthUser;
-import com.sparta.nbcampnewsfeed.entity.User;
-import com.sparta.nbcampnewsfeed.likeDto.LikePostResponseDto;
-import com.sparta.nbcampnewsfeed.likeService.LikeService;
-import com.sparta.nbcampnewsfeed.service.UserService;
-import lombok.Getter;
+import com.sparta.nbcampnewsfeed.dto.responseDto.LikePostResponseDto;
+import com.sparta.nbcampnewsfeed.service.LikeService;
 import lombok.RequiredArgsConstructor;
 
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

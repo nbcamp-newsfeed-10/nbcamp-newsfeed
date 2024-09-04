@@ -1,4 +1,4 @@
-package com.sparta.nbcampnewsfeed.dto;
+package com.sparta.nbcampnewsfeed.dto.requestDto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

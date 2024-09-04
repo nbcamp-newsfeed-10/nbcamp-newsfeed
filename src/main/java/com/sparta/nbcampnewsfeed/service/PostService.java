@@ -1,9 +1,7 @@
 package com.sparta.nbcampnewsfeed.service;
 
-import com.sparta.nbcampnewsfeed.dto.PostRequestDto;
-import com.sparta.nbcampnewsfeed.dto.PostResponseDto;
-import com.sparta.nbcampnewsfeed.dto.requestDto.AuthUser;
-import com.sparta.nbcampnewsfeed.entity.Friend;
+import com.sparta.nbcampnewsfeed.dto.requestDto.PostRequestDto;
+import com.sparta.nbcampnewsfeed.dto.responseDto.PostResponseDto;
 import com.sparta.nbcampnewsfeed.entity.Post;
 import com.sparta.nbcampnewsfeed.entity.User;
 import com.sparta.nbcampnewsfeed.repository.FriendRepository;
