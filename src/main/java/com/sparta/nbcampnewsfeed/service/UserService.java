@@ -18,8 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class UserService {
     private final UserRepository userRepository;
+    private final PostService postService;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final CommentService commentService;
 
     @Transactional
     public SignupResponseDto save(SignupRequestDto signUpRequestDto) {
@@ -118,6 +120,11 @@ public class UserService {
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("Incorrect password");
         }
+
+        // 작성한 게시물 전체 삭제
+        postService.deleteAllPosts(authUser.getId());
+        // 작성한 댓글 전체 삭제
+        commentService.deleteAllComment(authUser.getId());
 
         user.withdraw();
     }

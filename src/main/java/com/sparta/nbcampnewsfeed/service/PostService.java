@@ -20,16 +20,12 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final UserService userService;
     private final FriendRepository friendRepository;
-    private final FriendService friendService;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository, UserService userService, FriendRepository friendRepository, FriendService friendService) {
+    public PostService(PostRepository postRepository, UserRepository userRepository, FriendRepository friendRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
-        this.userService = userService;
         this.friendRepository = friendRepository;
-        this.friendService = friendService;
     }
 
     // 게시물 작성
@@ -160,6 +156,14 @@ public class PostService {
                         post.getUpdatedAt()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteAllPosts(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        List<Post> posts = postRepository.findAllByUser(user);
+        postRepository.deleteAll(posts);
     }
 
 }

@@ -59,4 +59,12 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NullPointerException("ID not found"));
         commentRepository.delete(comment);
     }
+
+    @Transactional
+    public void deleteAllComment(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        List<Comment> comments = commentRepository.findAllByUser(user);
+        commentRepository.deleteAll(comments);
+    }
 }
