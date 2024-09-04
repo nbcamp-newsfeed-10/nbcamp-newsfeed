@@ -26,16 +26,15 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ApiException.class)
-    public ResponseEntity<ApiResponse<Object>> handleCustomException(ApiException e) {
+    public ResponseEntity<ApiResponse<String>> handleCustomException(ApiException e) {
         BaseErrorCode errorCode = e.getErrorCode();
         return handleExceptionInternal(errorCode);
     }
 
-    private ResponseEntity<ApiResponse<Object>> handleExceptionInternal(BaseErrorCode errorCode) {
+    private ResponseEntity<ApiResponse<String>> handleExceptionInternal(BaseErrorCode errorCode) {
 
         return ResponseEntity.status(errorCode.getReasonHttpStatus().getHttpStatus())
-                .body(ApiResponse.onFailure(errorCode.getReasonHttpStatus().getCode(),
-                        errorCode.getReason().getMessage(), "null"));
+                .body(ApiResponse.onFailure(errorCode));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -27,21 +27,9 @@ public enum ErrorStatus implements BaseErrorCode {
     _NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "404", "존재하지 않는 댓글입니다."),
     _NOT_FOUND_LIKE(HttpStatus.NOT_FOUND, "404", "존재하지 않는 좋아요입니다.");
 
-
-
     private HttpStatus httpStatus;
     private String code;
     private String message;
-
-
-    @Override
-    public ErrorReasonDto getReason() {
-        return ErrorReasonDto.builder()
-                .code(code)
-                .message(message)
-                .isSuccess(false)
-                .build();
-    }
 
     @Override
     public ErrorReasonDto getReasonHttpStatus() {
