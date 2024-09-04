@@ -39,9 +39,3 @@ public class Like {
         this.post = post;
     }
 }
-
-//@OneToMany(mappedBy = "user") // user1명이 여러 friend 좋아요 누르기
-//private List<Like> likes = new ArrayList<>();
-//
-//@OneToMany(mappedBy = "friend") // 1명의 친구가 여러 user에게 좋아요 받기
-//private List<Like> likes = new ArrayList<>();

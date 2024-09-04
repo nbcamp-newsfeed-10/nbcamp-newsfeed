@@ -14,14 +14,6 @@ public class CommentDetailResponseDto {
     private final String content;
     private final LocalDateTime createdAt;
 
-    public CommentDetailResponseDto(Long commentId, Long postId, Long userId, String content, LocalDateTime createdAt) {
-        this.commentId = commentId;
-        this.postId = postId;
-        this.userId = userId;
-        this.content = content;
-        this.createdAt = createdAt;
-    }
-
     public CommentDetailResponseDto(Comment comment) {
         this.commentId = comment.getCommentId();
         this.postId = comment.getPost().getPostId();

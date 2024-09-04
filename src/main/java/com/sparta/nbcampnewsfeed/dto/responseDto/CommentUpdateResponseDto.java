@@ -12,12 +12,6 @@ public class CommentUpdateResponseDto {
     private final String content;
     private final LocalDateTime updatedAt;
 
-    public CommentUpdateResponseDto(Long commentId, String content, LocalDateTime updatedAt) {
-        this.commentId = commentId;
-        this.content = content;
-        this.updatedAt = updatedAt;
-    }
-
     public CommentUpdateResponseDto(Comment comment) {
         this.commentId = comment.getCommentId();
         this.content = comment.getContent();
