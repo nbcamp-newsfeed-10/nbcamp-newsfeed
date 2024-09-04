@@ -1,5 +1,6 @@
 package com.sparta.nbcampnewsfeed.profile.controller;
 
+import com.sparta.nbcampnewsfeed.ApiPayload.ApiResponse;
 import com.sparta.nbcampnewsfeed.auth.annotation.Auth;
 import com.sparta.nbcampnewsfeed.auth.dto.requestDto.AuthUser;
 import com.sparta.nbcampnewsfeed.profile.dto.requestDto.WithdrawRequestDto;
@@ -21,43 +22,37 @@ public class UserController {
 
     // 프로필 조회
     @GetMapping("/{userId}/profile")
-    public ResponseEntity<?> getUserProfile(
+    public ApiResponse<?> getUserProfile(
             @PathVariable Long userId,
             @Auth AuthUser authUser) {
 
         if (authUser.getId() != null && authUser.getId().equals(userId)) {
             // 자신이 자신의 프로필을 조회하는 경우 모든 정보 반환
             UserProfileMeResponseDto responseDto = userService.getUserProfileForMe(userId);
-            return ResponseEntity.ok(responseDto);
+            return ApiResponse.onSuccess(responseDto);
         } else {
             // 다른 사용자가 조회하는 경우 민감한 정보를 제외한 정보 반환
             UserProfileResponseDto responseDto = userService.getUserProfile(userId);
-            if (responseDto == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-            }
-            return ResponseEntity.ok(responseDto);
+            return ApiResponse.onSuccess(responseDto);
         }
     }
 
     // 프로필 수정
     @PutMapping("/{userId}/profile")
-    public ResponseEntity<UserProfileUpdateResponseDto> updateUserProfile(
+    public ApiResponse<UserProfileUpdateResponseDto> updateUserProfile(
             @PathVariable Long userId,
             @RequestBody UserProfileUpdateRequestDto updateRequest,
             @Auth AuthUser authUser) {
 
         UserProfileUpdateResponseDto responseDto = userService.updateUserProfile(userId, updateRequest, authUser);
-        if (responseDto == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.ok(responseDto);
+        return ApiResponse.onSuccess(responseDto);
     }
 
     // 회원 탈퇴
     @DeleteMapping("/withdraw")
-    public String withdraw(@RequestBody WithdrawRequestDto requestDto,
+    public ApiResponse<String> withdraw(@RequestBody WithdrawRequestDto requestDto,
                            @Auth AuthUser authUser) {
         userService.withdraw(requestDto, authUser);
-        return "ok";
+        return ApiResponse.onSuccess("Withdraw Success");
     }
 }

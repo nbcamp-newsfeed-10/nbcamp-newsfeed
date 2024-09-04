@@ -1,5 +1,6 @@
 package com.sparta.nbcampnewsfeed.auth.controller;
 
+import com.sparta.nbcampnewsfeed.ApiPayload.ApiResponse;
 import com.sparta.nbcampnewsfeed.auth.dto.requestDto.SigninRequest;
 import com.sparta.nbcampnewsfeed.auth.dto.requestDto.SignupRequestDto;
 import com.sparta.nbcampnewsfeed.auth.dto.responseDto.SignupResponseDto;
@@ -23,22 +24,26 @@ public class AuthController {
 
     // 회원가입 처리
     @PostMapping("/signup")
-    public ResponseEntity<UserResponseDto> signup(@Valid @RequestBody SignupRequestDto signUpRequestDto) {
+    public ResponseEntity<ApiResponse<UserResponseDto>> signup(@Valid @RequestBody SignupRequestDto signUpRequestDto) {
 
         SignupResponseDto signupResponseDto = userService.save(signUpRequestDto);
+        // header 에 token 추가
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", signupResponseDto.getBearerToken());
-        return new ResponseEntity<>(UserResponseDto.of(signupResponseDto),
+        headers.set(HttpHeaders.AUTHORIZATION, signupResponseDto.getBearerToken());
+        // 응답 dto 생성
+        UserResponseDto userResponseDto = UserResponseDto.of(signupResponseDto);
+        return new ResponseEntity<>(ApiResponse.onSuccess(userResponseDto),
                 headers, HttpStatus.OK);
     }
 
     // 로그인
     @PostMapping("/signin")
-    public ResponseEntity<Void> signin(@RequestBody SigninRequest signinRequest) {
+    public ResponseEntity<ApiResponse<String>> signin(@RequestBody SigninRequest signinRequest) {
         String bearerToken = userService.signin(signinRequest);
-        return ResponseEntity
-                .ok()
-                .header(HttpHeaders.AUTHORIZATION, bearerToken)
-                .build();
+        // header 에 token 추가
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, bearerToken);
+
+        return new ResponseEntity<>(ApiResponse.onSuccess("Login Success"), headers, HttpStatus.OK);
     }
 }
