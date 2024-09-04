@@ -23,10 +23,6 @@ public class UserResponseDto {
         this.updatedAt = updatedAt;
     }
 
-    public static UserResponseDto of(User user) {
-        return new UserResponseDto(user.getUserId(), user.getUsername(), user.getEmail(), user.getBio(), user.getCreatedAt(), user.getUpdatedAt());
-    }
-
     public static UserResponseDto of(SignupResponseDto signupResponseDto) {
         return new UserResponseDto(signupResponseDto.getUserId(), signupResponseDto.getUsername(), signupResponseDto.getEmail(),
                 signupResponseDto.getBio(), signupResponseDto.getCreatedAt(), signupResponseDto.getUpdatedAt());
