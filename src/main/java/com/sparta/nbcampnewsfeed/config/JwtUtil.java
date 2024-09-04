@@ -1,6 +1,5 @@
 package com.sparta.nbcampnewsfeed.config;
 
-import com.sparta.nbcampnewsfeed.entity.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;

@@ -1,7 +1,7 @@
 package com.sparta.nbcampnewsfeed.config;
 
-import com.sparta.nbcampnewsfeed.annotation.Auth;
-import com.sparta.nbcampnewsfeed.dto.requestDto.AuthUser;
+import com.sparta.nbcampnewsfeed.auth.annotation.Auth;
+import com.sparta.nbcampnewsfeed.auth.dto.requestDto.AuthUser;
 import io.micrometer.common.lang.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
