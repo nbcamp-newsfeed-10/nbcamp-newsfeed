@@ -15,37 +15,37 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/comments")
 public class CommentController {
 
     private final CommentService commentService;
 
     //댓글 작성
-    @PostMapping("/comments")
+    @PostMapping
     public ResponseEntity<CommentResponseDto> createComment(@RequestBody CommentRequestDto commentRequestDto) {
         return ResponseEntity.ok(commentService.createComment(commentRequestDto));
     }
 
     //댓글 전체 조회
-    @GetMapping("/comments")
+    @GetMapping
     public ResponseEntity<List<CommentSimpleResponseDto>> getAllComment() {
         return ResponseEntity.ok(commentService.getAllComment());
     }
 
     //댓글 단건 조회
-    @GetMapping("/comments/{commentId}")
+    @GetMapping("/{commentId}")
     public ResponseEntity<CommentDetailResponseDto> getComment(@PathVariable Long commentId) {
         return ResponseEntity.ok(commentService.getComment(commentId));
     }
 
     //댓글 수정
-    @PutMapping("/comments/{commentId}")
+    @PutMapping("/{commentId}")
     public ResponseEntity<CommentUpdateResponseDto> updateComment(@PathVariable Long commentId, @RequestBody CommentUpdateRequestDto commentUpdateRequestDto) {
         return ResponseEntity.ok(commentService.updateComment(commentId, commentUpdateRequestDto));
     }
 
     //댓글 삭제
-    @DeleteMapping("/comments/{commentId}")
+    @DeleteMapping("/{commentId}")
     public void deleteComment(@PathVariable Long commentId) {
         commentService.deleteComment(commentId);
     }
