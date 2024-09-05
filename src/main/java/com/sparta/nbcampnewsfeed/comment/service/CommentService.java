@@ -33,17 +33,11 @@ public class CommentService {
 
     @Transactional
     public CommentResponseDto createComment(CommentRequestDto commentRequestDto, Long requesterId) {
-        User user = userRepository.findById(commentRequestDto.getUserId()).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
+        User user = userRepository.findById(requesterId).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
         Post post = postRepository.findById(commentRequestDto.getPostId()).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_POST));
 
         Comment comment = new Comment(post, user, commentRequestDto.getContent());
         commentRepository.save(comment);
-
-        Long commentAuthorId = comment.getUser().getUserId();
-
-        if (!requesterId.equals(commentAuthorId)) {
-            throw new ApiException(ErrorStatus._UNAUTHORIZED);
-        }
 
         return new CommentResponseDto(comment);
     }
