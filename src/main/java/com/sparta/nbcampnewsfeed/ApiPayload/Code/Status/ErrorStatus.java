@@ -2,7 +2,6 @@ package com.sparta.nbcampnewsfeed.ApiPayload.Code.Status;
 
 import com.sparta.nbcampnewsfeed.ApiPayload.Code.BaseErrorCode;
 import com.sparta.nbcampnewsfeed.ApiPayload.Code.dto.ErrorReasonDto;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -10,7 +9,6 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ErrorStatus implements BaseErrorCode {
-
     _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "500", "Interval server error"),
     _BAD_REQUEST(HttpStatus.BAD_REQUEST,"400","잘못된 요청입니다."),
     _BAD_REQUEST_EMAIL(HttpStatus.BAD_REQUEST,"400","중복된 이메일입니다."),
@@ -25,7 +23,14 @@ public enum ErrorStatus implements BaseErrorCode {
     _NOT_FOUND_USER(HttpStatus.NOT_FOUND, "404", "존재하지 않는 유저입니다."),
     _NOT_FOUND_POST(HttpStatus.NOT_FOUND, "404", "존재하지 않는 게시물입니다."),
     _NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, "404", "존재하지 않는 댓글입니다."),
-    _NOT_FOUND_LIKE(HttpStatus.NOT_FOUND, "404", "존재하지 않는 좋아요입니다.");
+    _NOT_FOUND_LIKE(HttpStatus.NOT_FOUND, "404", "존재하지 않는 좋아요입니다."),
+    // friend 예외처리
+    _BAD_REQUEST_SELF_FRIEND(HttpStatus.BAD_REQUEST, "400","자기 자신에게 친구 신청을 할 수 없습니다."),
+    _BAD_REQUEST_FROM_USER(HttpStatus.BAD_REQUEST, "400", "이미 친구이거나 친구 신청을 한 회원입니다."),
+    _BAD_REQUEST_TO_USER(HttpStatus.BAD_REQUEST, "400", "이미 해당 회원으로부터 친구 신청을 받은 상태입니다."),
+    _NOT_FOUND_FRIEND(HttpStatus.NOT_FOUND, "404", "해당 회원에게 받은 친구 추가 요청이 없습니다."),
+    _BAD_REQUEST_ALREADY_FRIEND(HttpStatus.BAD_REQUEST,"400", "이미 친구인 회원입니다."),
+    _BAD_REQUEST_NOT_FRIEND(HttpStatus.BAD_REQUEST, "400", "친구가 아닌 회원입니다.");
 
     private HttpStatus httpStatus;
     private String code;

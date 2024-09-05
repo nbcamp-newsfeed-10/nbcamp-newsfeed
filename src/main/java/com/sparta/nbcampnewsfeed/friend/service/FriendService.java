@@ -1,6 +1,8 @@
 package com.sparta.nbcampnewsfeed.friend.service;
 
+import com.sparta.nbcampnewsfeed.ApiPayload.Code.Status.ErrorStatus;
 import com.sparta.nbcampnewsfeed.auth.dto.requestDto.AuthUser;
+import com.sparta.nbcampnewsfeed.exception.ApiException;
 import com.sparta.nbcampnewsfeed.friend.entity.Friend;
 import com.sparta.nbcampnewsfeed.profile.entity.User;
 import com.sparta.nbcampnewsfeed.friend.repository.FriendRepository;
@@ -20,29 +22,29 @@ public class FriendService {
     public void friendRequest(Long userId, AuthUser authUser) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
         User fromUser = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
         // 탈퇴한 회원에게 친구 신청 불가
         if (!user.isActive()) {
-            throw new IllegalArgumentException("withdraw user");
+            throw new ApiException(ErrorStatus._BAD_REQUEST_USER);
         }
 
         // 자기 자신에게 친구 신청 불가
         if (userId.equals(authUser.getId())) {
-            throw new IllegalArgumentException("자기 자신에게 친구 신청을 할 수 없습니다.");
+            throw new ApiException(ErrorStatus._BAD_REQUEST_SELF_FRIEND);
         }
 
         // 이미 친구인 경우 or 친구 신청을 한 경우 다시 친구 신청 불가
         friendRepository.findByToUserAndFromUser(user, fromUser)
                 .ifPresent(u -> {
-                    throw new IllegalArgumentException("이미 친구이거나 친구 신청을 한 회원입니다.");});
+                    throw new ApiException(ErrorStatus._BAD_REQUEST_FROM_USER);});
 
         // 이미 친구 신청을 받은 경우 친구 신청 불가
         friendRepository.findByToUserAndFromUser(fromUser, user)
                 .ifPresent(u -> {
-                    throw new IllegalArgumentException("이미 해당 회원으로부터 친구 신청을 받은 상태입니다.");});
+                    throw new ApiException(ErrorStatus._BAD_REQUEST_TO_USER);});
 
         Friend friend = new Friend(user, fromUser);
         friendRepository.save(friend);
@@ -50,23 +52,21 @@ public class FriendService {
 
     @Transactional
     public void acceptFriendRequest(Long userId, AuthUser authUser) {
-        User fromUser = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        User toUser = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        User fromUser = userRepository.findById(userId).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
+        User toUser = userRepository.findById(authUser.getId()).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
         // 탈퇴한 회원의 친구 신청 수락 불가
         if (!fromUser.isActive()) {
-            throw new IllegalArgumentException("withdraw user");
+            throw new ApiException(ErrorStatus._BAD_REQUEST_USER);
         }
 
         // 친구 요청 기록이 없는 경우 수락 불가
         Friend friend = friendRepository.findByToUserAndFromUser(toUser, fromUser)
-                .orElseThrow(() -> new IllegalArgumentException("해당 회원에게 받은 친구 추가 요청이 없습니다"));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_FRIEND));
 
         // 이미 친구 관계인 경우
         friendRepository.findByToUserAndFromUserAndFriendStatus(toUser, fromUser, true)
-                .ifPresent(u -> {throw new IllegalArgumentException("이미 친구인 회원입니다.");});
+                .ifPresent(u -> {throw new ApiException(ErrorStatus._BAD_REQUEST_ALREADY_FRIEND);});
 
         // 친구 관계 true 로 설정
         friend.acceptFriend();
@@ -80,15 +80,15 @@ public class FriendService {
     @Transactional
     public void deleteFriend(Long userId, AuthUser authUser) {
         User user = userRepository.findById(authUser.getId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
         User deleteUser = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
         // 친구가 아닐 때 삭제를 시도한 경우
         Friend friend1 = friendRepository.findByToUserAndFromUserAndFriendStatus(user, deleteUser, true)
-                .orElseThrow(() -> new IllegalArgumentException("친구가 아닌 회원입니다."));
+                .orElseThrow(() -> new ApiException(ErrorStatus._BAD_REQUEST_NOT_FRIEND));
         Friend friend2 = friendRepository.findByToUserAndFromUserAndFriendStatus(deleteUser, user, true)
-                .orElseThrow(() -> new IllegalArgumentException("친구가 아닌 회원입니다."));
+                .orElseThrow(() -> new ApiException(ErrorStatus._BAD_REQUEST_NOT_FRIEND));
 
         // 친구 관계 삭제
         friendRepository.delete(friend1);
