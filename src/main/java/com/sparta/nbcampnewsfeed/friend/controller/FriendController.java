@@ -1,5 +1,6 @@
 package com.sparta.nbcampnewsfeed.friend.controller;
 
+import com.sparta.nbcampnewsfeed.ApiPayload.ApiResponse;
 import com.sparta.nbcampnewsfeed.auth.annotation.Auth;
 import com.sparta.nbcampnewsfeed.auth.dto.requestDto.AuthUser;
 import com.sparta.nbcampnewsfeed.friend.service.FriendService;
@@ -15,22 +16,22 @@ public class FriendController {
 
     // 친구 신청 api
     @PostMapping("/{userId}")
-    public String friendRequest(@Auth AuthUser authUser, @PathVariable Long userId) {
+    public ApiResponse<String> friendRequest(@Auth AuthUser authUser, @PathVariable Long userId) {
         friendService.friendRequest(userId, authUser);
-        return "ok";
+        return ApiResponse.onSuccess("Friend Request Success");
     }
 
     // 친구 수락 api
     @PostMapping("/{userId}/accept")
-    public String acceptFriendRequest(@Auth AuthUser authUser, @PathVariable Long userId) {
+    public ApiResponse<String> acceptFriendRequest(@Auth AuthUser authUser, @PathVariable Long userId) {
         friendService.acceptFriendRequest(userId, authUser);
-        return "ok";
+        return ApiResponse.onSuccess("Friend Request Accept Success");
     }
 
     // 친구 삭제 api
     @DeleteMapping("/{userId}")
-    public String deleteFriend(@Auth AuthUser authUser, @PathVariable Long userId) {
+    public ApiResponse<String> deleteFriend(@Auth AuthUser authUser, @PathVariable Long userId) {
         friendService.deleteFriend(userId, authUser);
-        return "ok";
+        return ApiResponse.onSuccess("Friend Delete Success");
     }
 }

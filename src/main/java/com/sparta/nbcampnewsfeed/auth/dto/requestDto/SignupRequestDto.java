@@ -14,7 +14,7 @@ public class SignupRequestDto {
     @Email
     private String email;
     private String bio;
-    @Pattern(message = "최소 8글자 이상, 영문 + 숫자 + 특수문자를 최소 1글자씩 포함",
+    @Pattern(message = "비밀번호는 최소 8글자 이상, 영문 + 숫자 + 특수문자를 최소 1글자씩 포함해야 합니다.",
             regexp = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$")
     private String password;
 }

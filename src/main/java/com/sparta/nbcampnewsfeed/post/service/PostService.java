@@ -1,5 +1,7 @@
 package com.sparta.nbcampnewsfeed.post.service;
 
+import com.sparta.nbcampnewsfeed.ApiPayload.Code.Status.ErrorStatus;
+import com.sparta.nbcampnewsfeed.exception.ApiException;
 import com.sparta.nbcampnewsfeed.post.dto.requestDto.PostRequestDto;
 import com.sparta.nbcampnewsfeed.post.dto.responseDto.PostResponseDto;
 import com.sparta.nbcampnewsfeed.post.entity.Post;
@@ -33,7 +35,7 @@ public class PostService {
     public PostResponseDto createPost(Long userId, PostRequestDto requestDto) {
         // 사용자 조회
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
         // 게시물 생성
         Post post = new Post(user, requestDto.getTitle(), requestDto.getContent());
@@ -56,15 +58,11 @@ public class PostService {
     @Transactional
     public PostResponseDto updatePost(Long userId, Long postId, PostRequestDto requestDto) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시물을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_POST));
 
         // 게시물 작성자가 맞는지 확인 & 아니면 접근 금지
         if (!post.getUser().getUserId().equals(userId)) {
-            try {
-                throw new AccessDeniedException("작성자만 수정할 수 있습니다.");
-            } catch (AccessDeniedException e) {
-                throw new RuntimeException(e);
-            }
+            throw new ApiException(ErrorStatus._UNAUTHORIZED);
         }
 
         post.update(requestDto.getTitle(), requestDto.getContent());
@@ -82,15 +80,11 @@ public class PostService {
     @Transactional
     public PostResponseDto getPost(Long userId, Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시물을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_POST));
 
         // 게시물 작성자가 맞는지 확인 & 아니면 접근 금지
         if (!post.getUser().getUserId().equals(userId)) {
-            try {
-                throw new AccessDeniedException("작성자만 수정할 수 있습니다.");
-            } catch (AccessDeniedException e) {
-                throw new RuntimeException(e);
-            }
+            throw new ApiException(ErrorStatus._UNAUTHORIZED);
         }
 
         return new PostResponseDto(
@@ -107,15 +101,11 @@ public class PostService {
     @Transactional
     public void deletePost(Long userId, Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시물을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_POST));
 
         // 게시물 작성자가 맞는지 확인 & 아니면 접근 금지
         if (!post.getUser().getUserId().equals(userId)) {
-            try {
-                throw new AccessDeniedException("작성자만 수정할 수 있습니다.");
-            } catch (AccessDeniedException e) {
-                throw new RuntimeException(e);
-            }
+            throw new ApiException(ErrorStatus._UNAUTHORIZED);
         }
 
         postRepository.delete(post);
@@ -125,7 +115,7 @@ public class PostService {
     @Transactional
     public List<PostResponseDto> getNewsfeed(Long userId, int page, int size) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
         // 1. 친구 목록에서 친구들의 userId를 추출 (친구 상태가 true인 경우)
         List<Long> friendIds = friendRepository.findAllByToUserAndFriendStatus(user, true).stream()
@@ -161,7 +151,7 @@ public class PostService {
     @Transactional
     public void deleteAllPosts(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
         List<Post> posts = postRepository.findAllByUser(user);
         postRepository.deleteAll(posts);
     }
