@@ -29,7 +29,10 @@ Spring Boot를 활용해 친구들의 최신 게시물을 볼 수 있는 뉴스�
 - 친구 요청, 수락, 삭제
 - 뉴스피드 조회
 
-## API 명세
+## 🔗 와이어 프레임
+- [피그마 와이어프레임](https://www.figma.com/design/ojQlzmDOcEPbpL6xqw75Sw/%EB%89%B4%EC%8A%A4%ED%94%BC%EB%93%9C?t=mjPdfnULERRtgdII-0)
+
+## 📜 API 명세
 
 ### USER
 - 회원가입 기능
