@@ -37,9 +37,10 @@ public enum ErrorStatus implements BaseErrorCode {
     _UNAUTHORIZED_INVALID_TOKEN(HttpStatus.UNAUTHORIZED,"401","유효하지 않는 JWT 서명입니다."),
     _UNAUTHORIZED_EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED,"401","만료된 JWT 토큰입니다."),
     _UNAUTHORIZED_TOKEN(HttpStatus.UNAUTHORIZED,"401","JWT 토큰 검증 중 오류가 발생했습니다."),
-    _NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND, "404", "JWT 토큰이 필요합니다.")
-    ;
-
+    _NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND, "404", "JWT 토큰이 필요합니다."),
+    // comment 추가 예외처리
+    _BAD_REQUEST_NOT_FRIEND_COMMENT_GET(HttpStatus.BAD_REQUEST, "400", "해당 게시물의 댓글은 친구만 조회할 수 있습니다."),
+    _BAD_REQUEST_NOT_FRIEND_COMMENT_COUNT(HttpStatus.BAD_REQUEST, "400", "해당 게시물에 대한 댓글 수는 친구만 조회할 수 있습니다.");
 
     private HttpStatus httpStatus;
     private String code;
