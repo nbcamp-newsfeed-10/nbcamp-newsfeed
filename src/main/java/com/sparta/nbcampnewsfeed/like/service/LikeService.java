@@ -3,6 +3,7 @@ package com.sparta.nbcampnewsfeed.like.service;
 import com.sparta.nbcampnewsfeed.ApiPayload.Code.Status.ErrorStatus;
 import com.sparta.nbcampnewsfeed.auth.dto.requestDto.AuthUser;
 import com.sparta.nbcampnewsfeed.exception.ApiException;
+import com.sparta.nbcampnewsfeed.like.dto.responseDto.LikeCountResponseDto;
 import com.sparta.nbcampnewsfeed.like.entity.Like;
 import com.sparta.nbcampnewsfeed.post.entity.Post;
 import com.sparta.nbcampnewsfeed.profile.entity.User;
@@ -54,6 +55,18 @@ public class LikeService {
 
         // 좋아요 취소
         likeRepository.delete(like);
+    }
+
+    // 좋아요 개수를 반환하는 메서드 -> 존재하지 않는 게시물의 메세지를 반환하면 되니까 post를 찾을 수 없는 항목인 NOT FOUND POST 쓰기
+//    public Long getLikeCount(Long postId) {
+//        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_POST));
+//        return likeRepository.countByPost(post);
+//    }
+
+    public LikeCountResponseDto getLikeCount(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_POST));
+        Long likeCount = likeRepository.countByPost(post);
+        return new LikeCountResponseDto(post, likeCount);
     }
 
 }

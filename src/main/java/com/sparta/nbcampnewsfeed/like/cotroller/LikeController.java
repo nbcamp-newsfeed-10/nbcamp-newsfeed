@@ -2,6 +2,7 @@ package com.sparta.nbcampnewsfeed.like.cotroller;
 import com.sparta.nbcampnewsfeed.ApiPayload.ApiResponse;
 import com.sparta.nbcampnewsfeed.auth.annotation.Auth;
 import com.sparta.nbcampnewsfeed.auth.dto.requestDto.AuthUser;
+import com.sparta.nbcampnewsfeed.like.dto.responseDto.LikeCountResponseDto;
 import com.sparta.nbcampnewsfeed.like.dto.responseDto.LikePostResponseDto;
 import com.sparta.nbcampnewsfeed.like.service.LikeService;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +26,17 @@ public class LikeController {
     public ApiResponse<String> unlikePost(@PathVariable Long postId, @Auth AuthUser authUser) {
         likeService.unlikePost(postId, authUser);
         return ApiResponse.onSuccess("Unlike Post Success");
+    }
+
+    // 좋아요 개수 조회 // 쿼리를 너무 많이 날리게 되니 list로 하지말고 그냥 countby 로 하는게 나아
+//    @GetMapping("/count")
+//    public ApiResponse<Long> getLikeCount(@PathVariable Long postId) {
+//        Long likeCount = likeService.getLikeCount(postId);
+//        return ApiResponse.onSuccess(likeCount);
+//    }
+    @GetMapping("/count")
+    public ApiResponse<LikeCountResponseDto> getLikeCount(@PathVariable Long postId) {
+        LikeCountResponseDto likeCountResponseDto = likeService.getLikeCount(postId);
+        return ApiResponse.onSuccess(likeCountResponseDto);
     }
 }
