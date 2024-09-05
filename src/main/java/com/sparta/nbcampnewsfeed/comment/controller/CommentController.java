@@ -27,10 +27,14 @@ public class CommentController {
         return ApiResponse.onSuccess(commentResponseDto);
     }
 
-    //특정 게시글에 대한 댓글 전체 조회
+    // 특정 댓글 전체 조회
     @GetMapping("/post/{postId}")
     public ApiResponse<List<CommentSimpleResponseDto>> getAllComment(@PathVariable Long postId, @Auth AuthUser authUser) {
-        List<CommentSimpleResponseDto> comments = commentService.getAllComment(postId);
+        // AuthUser에서 userId 추출
+        Long userId = authUser.getId();
+
+        // 서비스에 userId 전달
+        List<CommentSimpleResponseDto> comments = commentService.getAllComment(postId, userId);
         return ApiResponse.onSuccess(comments);
     }
 
