@@ -30,8 +30,11 @@ public class LikeController {
 
     // 좋아요 개수 조회 // 쿼리를 너무 많이 날리게 되니 list로 하지말고 그냥 countby 로 하는게 나아
     @GetMapping("/count")
-    public ApiResponse<LikeCountResponseDto> getLikeCount(@PathVariable Long postId) {
-        LikeCountResponseDto likeCountResponseDto = likeService.getLikeCount(postId);
+    public ApiResponse<LikeCountResponseDto> getLikeCount(@PathVariable Long postId, @Auth AuthUser authUser) {
+        // AuthUser에서 userId 추출
+        Long userId = authUser.getId();
+        // 서비스에서 userId 전달
+        LikeCountResponseDto likeCountResponseDto = likeService.getLikeCount(postId, userId);
         return ApiResponse.onSuccess(likeCountResponseDto);
     }
 }
