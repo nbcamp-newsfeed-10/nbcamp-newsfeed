@@ -48,10 +48,42 @@ public class CommentService {
         return new CommentResponseDto(comment);
     }
 
-    public List<CommentSimpleResponseDto> getAllComment(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_POST));
-        List<Comment> comments = commentRepository.findByPost(post);
+    @Transactional
+    public List<CommentSimpleResponseDto> getAllComment(Long postId, Long userId) {
+        // 1. 현재 로그인된 사용자 정보 가져오기
+        User currentUser = userRepository.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_USER));
 
+        // 2. 게시물 조회
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ApiException(ErrorStatus._NOT_FOUND_POST));
+
+        User postOwner = post.getUser();
+
+        // 3. 자신이 작성한 게시물인 경우 친구 관계 확인 생략
+        if (!postOwner.getUserId().equals(currentUser.getUserId())) {
+            // 4. 친구 관계 확인 (친구 상태가 true인 경우만)
+            List<Long> friendIds = friendRepository.findAllByToUserAndFriendStatus(currentUser, true).stream()
+                    .map(friend -> friend.getFromUser().getUserId())  // 내가 받은 요청에서 친구의 userId 가져오기
+                    .collect(Collectors.toList());
+
+            friendIds.addAll(friendRepository.findAllByFromUserAndFriendStatus(currentUser, true).stream()
+                    .map(friend -> friend.getToUser().getUserId())  // 내가 보낸 요청에서 친구의 userId 가져오기
+                    .collect(Collectors.toList()));
+
+            // 본인의 userId는 제외 (필요한 경우)
+            friendIds = friendIds.stream()
+                    .filter(friendUserId -> !friendUserId.equals(currentUser.getUserId()))  // 본인의 userId 제외
+                    .collect(Collectors.toList());
+
+            // 게시물 작성자가 친구 목록에 있는지 확인
+            if (!friendIds.contains(postOwner.getUserId())) {
+                throw new IllegalArgumentException("해당 게시물의 댓글은 친구만 조회할 수 있습니다.");
+            }
+        }
+
+        // 5. 친구 관계 또는 본인인 경우 댓글 조회
+        List<Comment> comments = commentRepository.findByPost(post);
         return comments.stream().map(CommentSimpleResponseDto::new).toList();
     }
 
@@ -95,6 +127,7 @@ public class CommentService {
         commentRepository.deleteAll(comments);
     }
 
+    @Transactional
     public CommentCountResponseDto getCommentCount(Long postId, Long userId) {
         // 1. 현재 로그인된 사용자 정보 가져오기
         User currentUser = userRepository.findById(userId)
