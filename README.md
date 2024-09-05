@@ -503,3 +503,6 @@ Spring Boot를 활용해 친구들의 최신 게시물을 볼 수 있는 뉴스�
       }
     }
     ```
+    
+## ERD
+![image](https://github.com/user-attachments/assets/57449240-ec83-40a3-9876-ed4c0fbe5bbd)
