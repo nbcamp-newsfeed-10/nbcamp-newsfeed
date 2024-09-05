@@ -30,7 +30,16 @@ public enum ErrorStatus implements BaseErrorCode {
     _BAD_REQUEST_TO_USER(HttpStatus.BAD_REQUEST, "400", "이미 해당 회원으로부터 친구 신청을 받은 상태입니다."),
     _NOT_FOUND_FRIEND(HttpStatus.NOT_FOUND, "404", "해당 회원에게 받은 친구 추가 요청이 없습니다."),
     _BAD_REQUEST_ALREADY_FRIEND(HttpStatus.BAD_REQUEST,"400", "이미 친구인 회원입니다."),
-    _BAD_REQUEST_NOT_FRIEND(HttpStatus.BAD_REQUEST, "400", "친구가 아닌 회원입니다.");
+    _BAD_REQUEST_NOT_FRIEND(HttpStatus.BAD_REQUEST, "400", "친구가 아닌 회원입니다."),
+    // token 예외 처리
+    _BAD_REQUEST_UNSUPPORTED_TOKEN(HttpStatus.BAD_REQUEST,"400","지원되지 않는 JWT 토큰입니다."),
+    _BAD_REQUEST_ILLEGAL_TOKEN(HttpStatus.BAD_REQUEST,"400","잘못된 JWT 토큰입니다."),
+    _UNAUTHORIZED_INVALID_TOKEN(HttpStatus.UNAUTHORIZED,"401","유효하지 않는 JWT 서명입니다."),
+    _UNAUTHORIZED_EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED,"401","만료된 JWT 토큰입니다."),
+    _UNAUTHORIZED_TOKEN(HttpStatus.UNAUTHORIZED,"401","JWT 토큰 검증 중 오류가 발생했습니다."),
+    _NOT_FOUND_TOKEN(HttpStatus.NOT_FOUND, "404", "JWT 토큰이 필요합니다.")
+    ;
+
 
     private HttpStatus httpStatus;
     private String code;
