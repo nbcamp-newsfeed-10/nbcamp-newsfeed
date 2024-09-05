@@ -237,3 +237,269 @@ Spring Boot를 활용해 친구들의 최신 게시물을 볼 수 있는 뉴스�
   	"result": "Friend Delete Success"
   	}
     ```
+
+### Post
+
+- 게시글 작성 (Create Post)
+	- method: `POST`
+	- URL: `/posts`
+	- 설명: 게시글을 작성합니다.
+	- Request Body:    
+    ```
+    {
+      "title": "string",
+      "content": "string"
+    }
+    ```
+	- Response:
+    ```
+    {
+      "isSuccess": true,
+      "code": "200",
+      "message": "Ok",
+      "result": {
+        "postId": "long",
+        "userId": "long",
+        "title": "string",
+        "content": "string",
+        "createdAt": "string",
+        "updatedAt": "string"
+      }
+    }
+    ```   
+
+- 게시글 조회 (Get Post)
+	- method: `GET`
+	- URL: `/posts/{postId}`
+	- 설명: 특정 게시글을 조회합니다.
+	- Response: 
+    ```
+    {
+      "isSuccess": true,
+      "code": "200",
+      "message": "Ok",
+      "result": {
+        "postId": "long",
+        "userId": "long",
+        "title": "string",
+        "content": "string",
+        "createdAt": "string",
+        "updatedAt": "string"
+      }
+    }    
+    ```
+
+- 게시글 수정 (Update Post)
+	- method: `PUT`
+	- URL: `/posts/{postId}`
+	- 설명: 특정 게시글을 수정합니다.
+	- Request Body:
+    ```
+    {
+      "title": "string",
+      "content": "string"
+    }
+    ```
+	- Response:
+    ```
+    {
+      "isSuccess": true,
+      "code": "200",
+      "message": "Ok",
+      "result": {
+        "postId": "long",
+        "userId": "long",
+        "title": "string",
+        "content": "string",
+        "createdAt": "string",
+        "updatedAt": "string"
+      }
+    }    
+    ```
+
+- 게시글 삭제 (Delete Post)
+	- method: `DELETE`
+	- URL: `/posts/{postId}`
+	- 설명: 특정 게시글을 삭제합니다.
+	- Response:
+    ```
+    {
+      "isSuccess": true,
+      "code": "200",
+      "message": "Ok",
+      "result": "Post Delete Success"
+    }    
+    ```
+    
+- 뉴스피스 조회 (Get Newsfeed)
+	- method: `GET`
+	- URL: `/posts/newsfeed`
+	- 설명: 각 페이지 당 뉴스피드 데이터를 10개씩 조회합니다.
+	- Response:
+    ```
+    {
+      "isSuccess": true,
+      "code": "200",
+      "message": "Ok",
+      "result": {
+        "postId": "long",
+        "userId": "long",
+        "title": "string",
+        "content": "string",
+        "createdAt": "string",
+        "updatedAt": "string"
+      }
+    }
+    ```
+### Comment
+- 댓글 작성 (Create Comment)
+	- method: `POST`
+	- URL: `/posts/{postId}/comments`
+	- 설명: 특정 게시글에 댓글을 작성합니다.
+	- Request Body:
+    ```
+    {
+      "postId" : "long",
+      "userId": "long",
+      "content": "string"
+    }
+    ```
+	- Response:
+    ```
+    {
+      "isSuccess": true,
+      "code": "200",
+      "message": "Ok",
+      "result": {
+        "commentId": "long",
+        "postId": "long",
+        "userId": "long",
+        "content": "string",
+        "createdAt": "string"
+      }
+    }
+    ```
+    
+- 댓글 수정 (Update Comment)
+	- method: `PUT`
+	- URL: `/comments/{commentId}`
+	- 설명: 특정 댓글을 수정합니다.
+	- Request Body:   
+    ```
+    {
+        "postId" : "long",
+        "userId" : "long",
+        "content" : "string"
+    }
+    ```    
+	- Response: 
+    ```
+    {
+      "isSuccess": true,
+      "code": "200",
+      "message": "Ok",
+      "result": {
+        "commentId": "long",
+        "content": "string",
+        "updatedAt": "string"
+      }
+    }   
+    ```
+    
+- 댓글 삭제 (Delete Comment)
+	- method: `DELETE`
+	- URL: `/comments/{commentId}`
+	- 설명: 특정 댓글을 삭제합니다.
+	- Response:
+    ```
+    {
+      "isSuccess": true,
+      "code": "200",
+      "message": "Ok",
+      "result": "Comment Delete Success"
+    }
+    ```
+    
+- 특정 게시글에 대한 댓글 전체 조회 (Get Comments)
+	- method: `GET`
+	- URL: `/comments/posts/{postId}`
+	- 설명: 특정 게시글에 대한 댓글을 전체 조회합니다.
+	- Response:  
+    ```
+    {
+      "isSuccess": true,
+      "code": "200",
+      "message": "Ok",
+      "result": [
+        {"commentId": "long",
+        "content": "string",
+        "userId": "long"}
+      ]
+    }
+    ```
+    
+- 특정 게시글 댓글 개수 조회 (Get Comment Count)
+	- method: `GET`
+	- URL: `/comments/{postId}/count`
+	- 설명: 특정 게시글에 대한 댓글의 개수를 조회합니다.
+	- Response:    
+    ```
+    {
+      "isSuccess": true,
+      "code": "200",
+      "message": "Ok",
+      "result": {
+        "postId": "long"
+        "commentCount": "long"
+      }
+    }  
+    ```
+
+### Like
+- 좋아요 추가 (Add Like)
+	- method: `POST`
+	- URL: `/posts/{postId}/like`
+	- 설명: 특정 게시글에 좋아요를 추가합니다.
+	- Response:
+    ```
+    {
+      "isSuccess": true,
+      "code": "200",
+      "message": "Ok",
+      "result": {
+        "postId": "long",
+        "userId": "long"
+      }
+    }
+    ```
+
+- 좋아요 취소 (Remove Like)
+	- method: `DELETE`
+	- URL: `/posts/{postId}/like`
+	- 설명: 특정 게시글에 추가한 좋아요를 취소합니다.
+	- Response: 
+    ```
+    {
+      "isSuccess": true,
+      "code": "200",
+      "message": "Ok",
+      "result": "Unlike Post Success"
+    }
+    ```
+    
+- 특정 게시글 좋아요 개수 조회 (Get Like Count)
+	- mehtod: `GET`
+	- URL: `/posts/{postId}/like/count`
+	- 설명: 특정 게시글에 대한 좋아요의 개수를 조회합니다.
+	- Response:  
+    ```
+    {
+      "isSuccess": true,
+      "code": "200",
+      "message": "Ok",
+      "result": {
+        "postId": "long"
+        "likeCount": "long"
+      }
+    }
+    ```
