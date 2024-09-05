@@ -19,12 +19,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
-    @ExceptionHandler(UnauthorizedAccessException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ResponseEntity<String> handleUnauthorizedAccessException(UnauthorizedAccessException e) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-    }
-
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiResponse<String>> handleCustomException(ApiException e) {
         BaseErrorCode errorCode = e.getErrorCode();
@@ -37,6 +31,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.onFailure(errorCode));
     }
 
+    // method argument resolver 에서 validation 예외 발생시
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Object>> handleBindException(MethodArgumentNotValidException ex) {
         String errorCodes = ex.getBindingResult().getAllErrors()
