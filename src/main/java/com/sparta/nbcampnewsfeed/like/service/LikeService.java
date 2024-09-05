@@ -101,7 +101,7 @@ public class LikeService {
                 .collect(Collectors.toList());
         // 5. 게시물 작성자가 친구 목록에 있는지 확인
         if (!friendIds.contains(postOwner.getUserId())) {
-            throw new IllegalArgumentException("해당 게시물에 대한 댓글 수는 친구만 조회할 수 있습니다.");
+            throw new ApiException(ErrorStatus._BAD_REQUEST_NOT_FRIEND_LIKE_GET);
         }
         // 6. 친구 관계일 경우 댓글 개수 조회
         Long likeCount = likeRepository.countByPost(post);
